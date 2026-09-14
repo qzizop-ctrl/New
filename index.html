@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سجل متابعة الطلاب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1e3a5f;
+    --navy-dark:#16293f;
+    --paper:#f5f7fa;
+    --line:#d7dee6;
+    --row-alt:#eef2f7;
+    --ink:#1c2733;
+    --muted:#5b6b7c;
+    --good:#2e7d5b;
+    --warn:#c98a1f;
+    --bad:#c14343;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Tajawal', sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    padding:24px;
+  }
+  .sheet{
+    max-width:1400px;
+    margin:0 auto;
+    background:#fff;
+    border-radius:10px;
+    box-shadow:0 1px 3px rgba(30,58,95,.15);
+    overflow:hidden;
+  }
+  .top{
+    padding:22px 28px 18px;
+    border-bottom:3px solid var(--navy);
+  }
+  .top h1{
+    margin:0 0 14px;
+    font-size:26px;
+    font-weight:900;
+    color:var(--navy);
+  }
+  .meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px;
+  }
+  .meta label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:14px;
+    color:var(--muted);
+  }
+  .meta input{
+    font-family:inherit;
+    font-size:14px;
+    border:none;
+    border-bottom:2px dashed var(--line);
+    padding:4px 2px;
+    min-width:120px;
+    background:transparent;
+    color:var(--ink);
+  }
+  .meta input:focus{outline:none; border-bottom-color:var(--navy);}
+
+  .toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    padding:14px 28px;
+    background:var(--row-alt);
+    border-bottom:1px solid var(--line);
+  }
+  button{
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    border:none;
+    border-radius:6px;
+    padding:9px 16px;
+    cursor:pointer;
+    transition:filter .15s ease;
+  }
+  button:hover{filter:brightness(0.92);}
+  .btn-primary{background:var(--navy); color:#fff;}
+  .btn-ghost{background:#fff; color:var(--navy); border:1px solid var(--line);}
+  .btn-danger{background:#fff; color:var(--bad); border:1px solid var(--line);}
+  .spacer{flex:1;}
+  .save-note{
+    align-self:center;
+    font-size:12.5px;
+    color:var(--muted);
+  }
+
+  .table-wrap{
+    overflow-x:auto;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:1100px;
+  }
+  thead th{
+    background:var(--navy);
+    color:#fff;
+    font-size:14px;
+    font-weight:700;
+    padding:12px 10px;
+    text-align:center;
+    white-space:nowrap;
+    position:sticky;
+    top:0;
+  }
+  tbody td{
+    border-bottom:1px solid var(--line);
+    border-right:1px solid var(--line);
+    padding:0;
+  }
+  tbody tr:nth-child(even){background:var(--row-alt);}
+  tbody tr:hover{background:#e4ecf5;}
+
+  td .cell-num{
+    text-align:center;
+    color:var(--muted);
+    font-weight:700;
+    padding:10px 6px;
+    width:44px;
+  }
+  td input[type="text"]{
+    width:100%;
+    border:none;
+    background:transparent;
+    font-family:inherit;
+    font-size:14px;
+    padding:10px 10px;
+    color:var(--ink);
+  }
+  td input[type="text"]:focus{outline:2px solid var(--navy); outline-offset:-2px;}
+  .name-cell input{font-weight:700;}
+
+  select.rate{
+    width:100%;
+    border:none;
+    background:transparent;
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:700;
+    padding:10px 6px;
+    text-align:center;
+    text-align-last:center;
+    color:var(--ink);
+    cursor:pointer;
+  }
+  select.rate:focus{outline:2px solid var(--navy); outline-offset:-2px;}
+  select.rate[data-val="ممتاز"]{color:var(--good);}
+  select.rate[data-val="جيد"]{color:#2f6f8f;}
+  select.rate[data-val="متوسط"]{color:var(--warn);}
+  select.rate[data-val="ضعيف"]{color:var(--bad);}
+
+  .notes-cell input{min-width:180px;}
+
+  .row-actions{
+    text-align:center;
+    width:46px;
+  }
+  .del-row{
+    background:none;
+    border:none;
+    color:var(--bad);
+    font-size:17px;
+    cursor:pointer;
+    padding:6px;
+    line-height:1;
+  }
+  .del-row:hover{opacity:.6;}
+
+  .add-row-bar{
+    padding:14px 28px;
+    display:flex;
+    justify-content:center;
+    background:var(--row-alt);
+  }
+
+  @media print{
+    body{padding:0; background:#fff;}
+    .toolbar, .add-row-bar, .del-row, .row-actions{display:none !important;}
+    .sheet{box-shadow:none; border-radius:0;}
+    select.rate{-webkit-appearance:none; appearance:none;}
+  }
+
+  @media (max-width:640px){
+    .top{padding:16px 16px 14px;}
+    .toolbar{padding:12px 16px;}
+    .top h1{font-size:20px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="top">
+    <h1>سجل متابعة الطلاب</h1>
+    <div class="meta">
+      <label>الفصل <input type="text" id="classField" placeholder="مثال: 7A"></label>
+      <label>المادة <input type="text" id="subjectField" placeholder="اسم المادة"></label>
+      <label>التاريخ <input type="date" id="dateField"></label>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn-primary" id="addStudentBtn">+ إضافة طالب</button>
+    <button class="btn-ghost" id="exportCsvBtn">تصدير CSV</button>
+    <button class="btn-ghost" id="printBtn">طباعة / PDF</button>
+    <button class="btn-danger" id="clearBtn">مسح الكل</button>
+    <div class="spacer"></div>
+    <span class="save-note" id="saveNote">يتم الحفظ تلقائيًا على هذا الجهاز</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>م</th>
+          <th style="min-width:220px;">اسم الطالب</th>
+          <th>الواجب</th>
+          <th>الفصل</th>
+          <th>المشاركة</th>
+          <th>السلوك</th>
+          <th>الفهم</th>
+          <th>الدعم</th>
+          <th style="min-width:200px;">ملاحظات</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="add-row-bar">
+    <button class="btn-primary" id="addStudentBtn2">+ إضافة طالب جديد</button>
+  </div>
+</div>
+
+<script>
+const RATE_OPTIONS = ["", "ممتاز", "جيد", "متوسط", "ضعيف"];
+const RATE_COLS = ["homework","classwork","participation","behavior","understanding","support"];
+const STORAGE_KEY = "student_followup_sheet_v1";
+
+let state = {
+  classField: "",
+  subjectField: "",
+  dateField: "",
+  students: []
+};
+
+function newStudent(){
+  return { name:"", homework:"", classwork:"", participation:"", behavior:"", understanding:"", support:"", notes:"" };
+}
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      state = Object.assign(state, parsed);
+    }
+  }catch(e){}
+  if(!state.students || state.students.length === 0){
+    state.students = [newStudent()];
+  }
+}
+
+function save(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const note = document.getElementById('saveNote');
+  note.textContent = "تم الحفظ ✓";
+  clearTimeout(save._t);
+  save._t = setTimeout(()=>{ note.textContent = "يتم الحفظ تلقائيًا على هذا الجهاز"; }, 1200);
+}
+
+function render(){
+  document.getElementById('classField').value = state.classField || "";
+  document.getElementById('subjectField').value = state.subjectField || "";
+  document.getElementById('dateField').value = state.dateField || "";
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = "";
+
+  state.students.forEach((s, i) => {
+    const tr = document.createElement('tr');
+
+    const tdNum = document.createElement('td');
+    tdNum.className = "cell-num";
+    tdNum.textContent = i + 1;
+    tr.appendChild(tdNum);
+
+    const tdName = document.createElement('td');
+    tdName.className = "name-cell";
+    const nameInput = document.createElement('input');
+    nameInput.type = "text";
+    nameInput.placeholder = "اسم الطالب";
+    nameInput.value = s.name;
+    nameInput.addEventListener('input', e => { s.name = e.target.value; save(); });
+    tdName.appendChild(nameInput);
+    tr.appendChild(tdName);
+
+    RATE_COLS.forEach(col => {
+      const td = document.createElement('td');
+      const sel = document.createElement('select');
+      sel.className = "rate";
+      sel.setAttribute('data-val', s[col] || "");
+      RATE_OPTIONS.forEach(opt => {
+        const o = document.createElement('option');
+        o.value = opt;
+        o.textContent = opt === "" ? "—" : opt;
+        if(s[col] === opt) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', e => {
+        s[col] = e.target.value;
+        sel.setAttribute('data-val', e.target.value);
+        save();
+      });
+      td.appendChild(sel);
+      tr.appendChild(td);
+    });
+
+    const tdNotes = document.createElement('td');
+    tdNotes.className = "notes-cell";
+    const notesInput = document.createElement('input');
+    notesInput.type = "text";
+    notesInput.placeholder = "ملاحظات إضافية";
+    notesInput.value = s.notes;
+    notesInput.addEventListener('input', e => { s.notes = e.target.value; save(); });
+    tdNotes.appendChild(notesInput);
+    tr.appendChild(tdNotes);
+
+    const tdAction = document.createElement('td');
+    tdAction.className = "row-actions";
+    const delBtn = document.createElement('button');
+    delBtn.className = "del-row";
+    delBtn.title = "حذف الطالب";
+    delBtn.textContent = "✕";
+    delBtn.addEventListener('click', () => {
+      state.students.splice(i, 1);
+      if(state.students.length === 0) state.students.push(newStudent());
+      save();
+      render();
+    });
+    tdAction.appendChild(delBtn);
+    tr.appendChild(tdAction);
+
+    tbody.appendChild(tr);
+  });
+}
+
+function addStudent(){
+  state.students.push(newStudent());
+  save();
+  render();
+  const inputs = document.querySelectorAll('.name-cell input');
+  if(inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function exportCsv(){
+  const headers = ["م","اسم الطالب","الواجب","الفصل","المشاركة","السلوك","الفهم","الدعم","ملاحظات"];
+  const rows = state.students.map((s,i) => [
+    i+1, s.name, s.homework, s.classwork, s.participation, s.behavior, s.understanding, s.support, s.notes
+  ]);
+  let csv = "\uFEFF" + headers.join(",") + "\n";
+  rows.forEach(r => {
+    csv += r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",") + "\n";
+  });
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const cls = state.classField ? state.classField.replace(/\s+/g,'_') : "class";
+  const dt = state.dateField || new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `متابعة_${cls}_${dt}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('classField').addEventListener('input', e => { state.classField = e.target.value; save(); });
+document.getElementById('subjectField').addEventListener('input', e => { state.subjectField = e.target.value; save(); });
+document.getElementById('dateField').addEventListener('input', e => { state.dateField = e.target.value; save(); });
+
+document.getElementById('addStudentBtn').addEventListener('click', addStudent);
+document.getElementById('addStudentBtn2').addEventListener('click', addStudent);
+document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if(confirm("هل تريد مسح كل البيانات في هذا الفصل؟ لا يمكن التراجع.")){
+    state.students = [newStudent()];
+    state.classField = "";
+    state.subjectField = "";
+    state.dateField = "";
+    save();
+    render();
+  }
+});
+
+load();
+render();
+</script>
+</body>
+</html>
