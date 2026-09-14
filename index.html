@@ -2,282 +2,459 @@
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title id="pageTitle">سجل متابعة الطلاب</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e3a5f">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Follow-up">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
     --navy:#1e3a5f;
-    --navy-dark:#16293f;
-    --paper:#f5f7fa;
-    --line:#d7dee6;
-    --row-alt:#eef2f7;
+    --navy-dark:#152a45;
+    --bg:#eef1f6;
+    --surface:#ffffff;
+    --line:#e1e6ed;
     --ink:#1c2733;
-    --muted:#5b6b7c;
-    --good:#2e7d5b;
-    --warn:#c98a1f;
-    --bad:#c14343;
+    --muted:#7c8a9a;
+    --accent:#2f6f5e;
+    --excellent:#2e8b62;
+    --excellent-bg:#e4f5ec;
+    --good:#2f6f9f;
+    --good-bg:#e6f0f9;
+    --average:#c9891f;
+    --average-bg:#fbf0dc;
+    --weak:#c1483f;
+    --weak-bg:#faeae8;
+    --radius-card:16px;
+    --radius-chip:10px;
+    --safe-bottom:env(safe-area-inset-bottom, 0px);
   }
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
   body{
     margin:0;
     font-family:'Tajawal', 'Inter', sans-serif;
-    background:var(--paper);
+    background:var(--bg);
     color:var(--ink);
-    padding:24px;
   }
   html[dir="ltr"] body{ font-family:'Inter', 'Tajawal', sans-serif; }
+  button, input, select{ font-family:inherit; }
 
-  .sheet{
-    max-width:1400px;
+  .app{
+    max-width:560px;
     margin:0 auto;
+    min-height:100vh;
+    background:var(--bg);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+
+  .appbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:var(--navy);
+    color:#fff;
+    padding:14px 14px calc(12px + 2px);
+    box-shadow:0 2px 8px rgba(21,42,69,.25);
+  }
+  .appbar-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .appbar-title{
+    flex:1;
+    min-width:0;
+  }
+  .appbar-title h1{
+    margin:0;
+    font-size:18px;
+    font-weight:900;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .appbar-sub{
+    margin:2px 0 0;
+    font-size:12px;
+    color:#c3d0e0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .icon-btn{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    font-size:17px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .icon-btn:active{background:rgba(255,255,255,.28);}
+  .lang-pill{
+    display:flex;
+    border-radius:20px;
+    background:rgba(255,255,255,.14);
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .lang-pill button{
+    border:none;
+    background:transparent;
+    color:#dbe6f2;
+    font-size:12.5px;
+    font-weight:700;
+    padding:8px 12px;
+    cursor:pointer;
+  }
+  .lang-pill button.active{
     background:#fff;
-    border-radius:10px;
-    box-shadow:0 1px 3px rgba(30,58,95,.15);
+    color:var(--navy);
+    border-radius:20px;
+  }
+
+  .subbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 14px 4px;
+  }
+  .count-badge{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--muted);
+  }
+
+  .content{
+    flex:1;
+    padding:8px 14px calc(96px + var(--safe-bottom));
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--muted);
+  }
+  .empty-state .emoji{font-size:40px; margin-bottom:10px;}
+  .empty-state p{margin:0; font-size:14.5px; line-height:1.6;}
+
+  .card{
+    background:var(--surface);
+    border-radius:var(--radius-card);
+    box-shadow:0 1px 2px rgba(21,42,69,.06), 0 1px 8px rgba(21,42,69,.05);
+    margin-bottom:12px;
     overflow:hidden;
   }
-  .top{
-    padding:22px 28px 18px;
-    border-bottom:3px solid var(--navy);
+  .card-head{
     display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:16px;
-    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    padding:12px 12px 8px;
   }
-  .top-main{flex:1; min-width:260px;}
-  .top h1{
-    margin:0 0 14px;
-    font-size:26px;
+  .avatar{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:var(--navy);
+    color:#fff;
     font-weight:900;
-    color:var(--navy);
-  }
-  .meta{
+    font-size:15px;
     display:flex;
-    flex-wrap:wrap;
-    gap:18px;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
   }
-  .meta label{
+  .card-head input.name-input{
+    flex:1;
+    min-width:0;
+    border:none;
+    background:transparent;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ink);
+    padding:8px 4px;
+    border-bottom:1.5px solid transparent;
+  }
+  .card-head input.name-input:focus{
+    outline:none;
+    border-bottom-color:var(--navy);
+  }
+  .card-menu-btn{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    border:none;
+    background:transparent;
+    color:var(--muted);
+    font-size:18px;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .card-menu-btn:active{background:var(--bg);}
+
+  .rating-grid{
+    padding:2px 12px 10px;
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+  }
+  .rating-row{
     display:flex;
     align-items:center;
     gap:8px;
-    font-weight:700;
-    font-size:14px;
-    color:var(--muted);
   }
-  .meta input{
-    font-family:inherit;
-    font-size:14px;
-    border:none;
-    border-bottom:2px dashed var(--line);
-    padding:4px 2px;
-    min-width:120px;
-    background:transparent;
-    color:var(--ink);
-  }
-  .meta input:focus{outline:none; border-bottom-color:var(--navy);}
-
-  .lang-switch{
-    display:flex;
-    border:1.5px solid var(--navy);
-    border-radius:8px;
-    overflow:hidden;
-    height:36px;
+  .rating-label{
+    width:78px;
     flex-shrink:0;
-  }
-  .lang-switch button{
-    border:none;
-    background:#fff;
-    color:var(--navy);
-    font-family:inherit;
-    font-size:13.5px;
-    font-weight:700;
-    padding:0 16px;
-    cursor:pointer;
-  }
-  .lang-switch button.active{
-    background:var(--navy);
-    color:#fff;
-  }
-
-  .toolbar{
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    padding:14px 28px;
-    background:var(--row-alt);
-    border-bottom:1px solid var(--line);
-  }
-  button{
-    font-family:inherit;
-    font-size:14px;
-    font-weight:700;
-    border:none;
-    border-radius:6px;
-    padding:9px 16px;
-    cursor:pointer;
-    transition:filter .15s ease;
-  }
-  button:hover{filter:brightness(0.92);}
-  .btn-primary{background:var(--navy); color:#fff;}
-  .btn-ghost{background:#fff; color:var(--navy); border:1px solid var(--line);}
-  .btn-danger{background:#fff; color:var(--bad); border:1px solid var(--line);}
-  .spacer{flex:1;}
-  .save-note{
-    align-self:center;
     font-size:12.5px;
     color:var(--muted);
-  }
-
-  .table-wrap{
-    overflow-x:auto;
-  }
-  table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:1100px;
-  }
-  thead th{
-    background:var(--navy);
-    color:#fff;
-    font-size:14px;
     font-weight:700;
-    padding:12px 10px;
-    text-align:center;
-    white-space:nowrap;
-    position:sticky;
-    top:0;
   }
-  tbody td{
-    border-bottom:1px solid var(--line);
-    border-inline-end:1px solid var(--line);
-    padding:0;
+  .rating-options{
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:5px;
   }
-  tbody tr:nth-child(even){background:var(--row-alt);}
-  tbody tr:hover{background:#e4ecf5;}
-
-  td .cell-num{
-    text-align:center;
+  .chip{
+    border:1.5px solid var(--line);
+    background:var(--surface);
     color:var(--muted);
+    font-size:11.5px;
     font-weight:700;
-    padding:10px 6px;
-    width:44px;
+    border-radius:var(--radius-chip);
+    padding:7px 2px;
+    text-align:center;
+    cursor:pointer;
+    line-height:1.2;
   }
-  td input[type="text"]{
-    width:100%;
-    border:none;
-    background:transparent;
-    font-family:inherit;
-    font-size:14px;
-    padding:10px 10px;
-    color:var(--ink);
-  }
-  td input[type="text"]:focus{outline:2px solid var(--navy); outline-offset:-2px;}
-  .name-cell input{font-weight:700;}
+  .chip.sel-excellent{ background:var(--excellent-bg); border-color:var(--excellent); color:var(--excellent); }
+  .chip.sel-good{ background:var(--good-bg); border-color:var(--good); color:var(--good); }
+  .chip.sel-average{ background:var(--average-bg); border-color:var(--average); color:var(--average); }
+  .chip.sel-weak{ background:var(--weak-bg); border-color:var(--weak); color:var(--weak); }
 
-  select.rate{
+  .notes-wrap{
+    padding:0 12px 14px;
+  }
+  .notes-wrap input{
     width:100%;
     border:none;
-    background:transparent;
-    font-family:inherit;
+    background:var(--bg);
+    border-radius:10px;
+    padding:10px 12px;
     font-size:13.5px;
-    font-weight:700;
-    padding:10px 6px;
-    text-align:center;
-    text-align-last:center;
     color:var(--ink);
-    cursor:pointer;
   }
-  select.rate:focus{outline:2px solid var(--navy); outline-offset:-2px;}
-  select.rate[data-val="EXCELLENT"]{color:var(--good);}
-  select.rate[data-val="GOOD"]{color:#2f6f8f;}
-  select.rate[data-val="AVERAGE"]{color:var(--warn);}
-  select.rate[data-val="WEAK"]{color:var(--bad);}
+  .notes-wrap input:focus{outline:1.5px solid var(--navy);}
 
-  .notes-cell input{min-width:180px;}
-
-  .row-actions{
-    text-align:center;
-    width:46px;
-  }
-  .del-row{
-    background:none;
+  .fab{
+    position:fixed;
+    bottom:calc(24px + var(--safe-bottom));
+    inset-inline-end:calc(50% - 280px + 20px);
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background:var(--accent);
+    color:#fff;
     border:none;
-    color:var(--bad);
-    font-size:17px;
-    cursor:pointer;
-    padding:6px;
-    line-height:1;
-  }
-  .del-row:hover{opacity:.6;}
-
-  .add-row-bar{
-    padding:14px 28px;
+    font-size:26px;
+    box-shadow:0 4px 14px rgba(47,111,94,.45);
     display:flex;
+    align-items:center;
     justify-content:center;
-    background:var(--row-alt);
+    cursor:pointer;
+    z-index:15;
+  }
+  .fab:active{ filter:brightness(0.92); }
+  @media (max-width:600px){
+    .fab{ inset-inline-end:20px; }
+  }
+
+  .toast{
+    position:fixed;
+    bottom:calc(24px + var(--safe-bottom));
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--navy-dark);
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    padding:10px 18px;
+    border-radius:30px;
+    opacity:0;
+    transition:opacity .2s ease, transform .2s ease;
+    z-index:40;
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .sheet-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(20,30,45,.45);
+    z-index:50;
+    display:none;
+  }
+  .sheet-overlay.open{ display:block; }
+  .bottom-sheet{
+    position:fixed;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%) translateY(100%);
+    width:100%;
+    max-width:560px;
+    background:var(--surface);
+    border-radius:20px 20px 0 0;
+    z-index:51;
+    transition:transform .25s ease;
+    max-height:88vh;
+    overflow-y:auto;
+    padding-bottom:calc(20px + var(--safe-bottom));
+  }
+  .bottom-sheet.open{ transform:translateX(-50%) translateY(0); }
+  .sheet-handle{
+    width:38px;
+    height:4px;
+    background:var(--line);
+    border-radius:4px;
+    margin:10px auto 4px;
+  }
+  .sheet-title{
+    font-size:16px;
+    font-weight:900;
+    color:var(--navy);
+    padding:10px 20px 4px;
+  }
+  .sheet-field{
+    padding:10px 20px;
+  }
+  .sheet-field label{
+    display:block;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .sheet-field input{
+    width:100%;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:11px 12px;
+    font-size:14.5px;
+    color:var(--ink);
+    background:var(--bg);
+  }
+  .sheet-field input:focus{ outline:none; border-color:var(--navy); }
+  .sheet-divider{ height:1px; background:var(--line); margin:10px 20px; }
+  .sheet-action{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    border:none;
+    background:none;
+    padding:14px 20px;
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--ink);
+    text-align:start;
+    cursor:pointer;
+  }
+  .sheet-action:active{ background:var(--bg); }
+  .sheet-action.danger{ color:var(--weak); }
+  .sheet-action .sa-icon{
+    width:22px;
+    text-align:center;
+    font-size:16px;
+    flex-shrink:0;
+  }
+
+  @media (max-width:380px){
+    .rating-label{ width:64px; font-size:11.5px; }
+    .chip{ font-size:10.5px; padding:6px 2px; }
   }
 
   @media print{
-    body{padding:0; background:#fff;}
-    .toolbar, .add-row-bar, .del-row, .row-actions, .lang-switch{display:none !important;}
-    .sheet{box-shadow:none; border-radius:0;}
-    select.rate{-webkit-appearance:none; appearance:none;}
-  }
-
-  @media (max-width:640px){
-    .top{padding:16px 16px 14px;}
-    .toolbar{padding:12px 16px;}
-    .top h1{font-size:20px;}
+    .appbar, .fab, .toast, .sheet-overlay, .bottom-sheet, .card-menu-btn{ display:none !important; }
+    body{ background:#fff; }
   }
 </style>
 </head>
 <body>
 
-<div class="sheet">
-  <div class="top">
-    <div class="top-main">
-      <h1 id="titleText">سجل متابعة الطلاب</h1>
-      <div class="meta">
-        <label><span id="lblClass">الفصل</span> <input type="text" id="classField"></label>
-        <label><span id="lblSubject">المادة</span> <input type="text" id="subjectField"></label>
-        <label><span id="lblDate">التاريخ</span> <input type="date" id="dateField"></label>
+<div class="app">
+
+  <div class="appbar">
+    <div class="appbar-row">
+      <div class="appbar-title">
+        <h1 id="titleText">سجل متابعة الطلاب</h1>
+        <p class="appbar-sub" id="appbarSub">—</p>
       </div>
+      <div class="lang-pill">
+        <button id="btnAr" class="active">AR</button>
+        <button id="btnEn">EN</button>
+      </div>
+      <button class="icon-btn" id="menuBtn" title="Menu">⋮</button>
     </div>
-    <div class="lang-switch">
-      <button id="btnAr" class="active">AR</button>
-      <button id="btnEn">EN</button>
+  </div>
+
+  <div class="subbar">
+    <span class="count-badge" id="countBadge"></span>
+  </div>
+
+  <div class="content" id="content">
+  </div>
+
+  <button class="fab" id="fabAdd" title="">+</button>
+  <div class="toast" id="toast"></div>
+
+  <div class="sheet-overlay" id="sheetOverlay"></div>
+  <div class="bottom-sheet" id="bottomSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheetTitle">إعدادات الكشف</div>
+
+    <div class="sheet-field">
+      <label id="lblClass">الفصل</label>
+      <input type="text" id="classField">
     </div>
+    <div class="sheet-field">
+      <label id="lblSubject">المادة</label>
+      <input type="text" id="subjectField">
+    </div>
+    <div class="sheet-field">
+      <label id="lblDate">التاريخ</label>
+      <input type="date" id="dateField">
+    </div>
+
+    <div class="sheet-divider"></div>
+
+    <button class="sheet-action" id="exportCsvBtn"><span class="sa-icon">⭳</span><span id="actExportLabel"></span></button>
+    <button class="sheet-action" id="printBtn"><span class="sa-icon">⎙</span><span id="actPrintLabel"></span></button>
+    <button class="sheet-action danger" id="clearBtn"><span class="sa-icon">✕</span><span id="actClearLabel"></span></button>
   </div>
 
-  <div class="toolbar">
-    <button class="btn-primary" id="addStudentBtn"></button>
-    <button class="btn-ghost" id="exportCsvBtn"></button>
-    <button class="btn-ghost" id="printBtn"></button>
-    <button class="btn-danger" id="clearBtn"></button>
-    <div class="spacer"></div>
-    <span class="save-note" id="saveNote"></span>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr id="headRow"></tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-  </div>
-
-  <div class="add-row-bar">
-    <button class="btn-primary" id="addStudentBtn2"></button>
-  </div>
 </div>
 
 <script>
-const RATE_KEYS = ["", "EXCELLENT", "GOOD", "AVERAGE", "WEAK"];
-const RATE_COLS = ["homework","classwork","participation","behavior","understanding","support"];
-const STORAGE_KEY = "student_followup_sheet_v1";
+const RATE_KEYS = ["EXCELLENT", "GOOD", "AVERAGE", "WEAK"];
+const RATE_CLASS = { EXCELLENT:"sel-excellent", GOOD:"sel-good", AVERAGE:"sel-average", WEAK:"sel-weak" };
+const STORAGE_KEY = "student_followup_sheet_v2";
 const LANG_KEY = "student_followup_lang";
 
 const I18N = {
@@ -285,13 +462,13 @@ const I18N = {
     dir: "rtl",
     pageTitle: "سجل متابعة الطلاب",
     title: "سجل متابعة الطلاب",
+    subtitleWith: (c,s) => [c,s].filter(Boolean).join(" · ") || "بدون تفاصيل",
     lblClass: "الفصل",
     lblSubject: "المادة",
     lblDate: "التاريخ",
     classPh: "مثال: 7A",
     subjectPh: "اسم المادة",
-    colNum: "م",
-    colName: "اسم الطالب",
+    sheetTitle: "إعدادات الكشف",
     namePh: "اسم الطالب",
     colHomework: "الواجب",
     colClasswork: "الفصل",
@@ -299,30 +476,34 @@ const I18N = {
     colBehavior: "السلوك",
     colUnderstanding: "الفهم",
     colSupport: "الدعم",
-    colNotes: "ملاحظات",
-    notesPh: "ملاحظات إضافية",
-    addStudent: "+ إضافة طالب",
-    addStudent2: "+ إضافة طالب جديد",
+    notesPh: "أضف ملاحظة...",
     exportCsv: "تصدير CSV",
     print: "طباعة / PDF",
-    clearAll: "مسح الكل",
-    saveNoteDefault: "يتم الحفظ تلقائيًا على هذا الجهاز",
-    saveNoteSaved: "تم الحفظ ✓",
-    deleteRow: "حذف الطالب",
+    clearAll: "مسح كل البيانات",
+    fabTitle: "إضافة طالب",
+    countLabel: (n) => n === 0 ? "لا يوجد طلاب" : (n === 1 ? "طالب واحد" : n + " طلاب"),
+    toastAdded: "تمت إضافة الطالب",
+    toastDeleted: "تم حذف الطالب",
+    emptyTitle: "مفيش طلاب لسه",
+    emptyHint: "دوس على زرار + تحت عشان تضيف أول طالب",
+    deleteConfirm: "حذف هذا الطالب؟",
     confirmClear: "هل تريد مسح كل البيانات في هذا الفصل؟ لا يمكن التراجع.",
-    rates: { "": "—", EXCELLENT:"ممتاز", GOOD:"جيد", AVERAGE:"متوسط", WEAK:"ضعيف" }
+    rateShort: { EXCELLENT:"ممتاز", GOOD:"جيد", AVERAGE:"متوسط", WEAK:"ضعيف" },
+    nameHeader: "اسم الطالب",
+    notesHeader: "ملاحظات",
+    numHeader: "م"
   },
   en: {
     dir: "ltr",
     pageTitle: "Student Follow-up Sheet",
-    title: "Student Follow-up Sheet",
+    title: "Follow-up Sheet",
+    subtitleWith: (c,s) => [c,s].filter(Boolean).join(" · ") || "No details set",
     lblClass: "Class",
     lblSubject: "Subject",
     lblDate: "Date",
     classPh: "e.g. 7A",
     subjectPh: "Subject name",
-    colNum: "No.",
-    colName: "Student Name",
+    sheetTitle: "Sheet Settings",
     namePh: "Student name",
     colHomework: "Homework",
     colClasswork: "Classwork",
@@ -330,18 +511,22 @@ const I18N = {
     colBehavior: "Behavior",
     colUnderstanding: "Understanding",
     colSupport: "Support",
-    colNotes: "Notes",
-    notesPh: "Additional notes",
-    addStudent: "+ Add Student",
-    addStudent2: "+ Add New Student",
+    notesPh: "Add a note...",
     exportCsv: "Export CSV",
     print: "Print / PDF",
-    clearAll: "Clear All",
-    saveNoteDefault: "Autosaved on this device",
-    saveNoteSaved: "Saved ✓",
-    deleteRow: "Delete student",
+    clearAll: "Clear all data",
+    fabTitle: "Add student",
+    countLabel: (n) => n === 0 ? "No students yet" : (n === 1 ? "1 student" : n + " students"),
+    toastAdded: "Student added",
+    toastDeleted: "Student removed",
+    emptyTitle: "No students yet",
+    emptyHint: "Tap the + button below to add your first student",
+    deleteConfirm: "Delete this student?",
     confirmClear: "Clear all data for this class? This cannot be undone.",
-    rates: { "": "—", EXCELLENT:"Excellent", GOOD:"Good", AVERAGE:"Average", WEAK:"Weak" }
+    rateShort: { EXCELLENT:"Excellent", GOOD:"Good", AVERAGE:"Average", WEAK:"Weak" },
+    nameHeader: "Student Name",
+    notesHeader: "Notes",
+    numHeader: "No."
   }
 };
 
@@ -366,18 +551,146 @@ function loadState(){
       state = Object.assign(state, parsed);
     }
   }catch(e){}
-  if(!state.students || state.students.length === 0){
-    state.students = [newStudent()];
-  }
+  if(!state.students) state.students = [];
 }
 
-function saveState(){
+function persist(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  const note = document.getElementById('saveNote');
+}
+
+let toastTimer = null;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 1400);
+}
+
+function initials(name){
+  const trimmed = (name || "").trim();
+  if(!trimmed) return "?";
+  const parts = trimmed.split(/\s+/);
+  return parts[0].charAt(0).toUpperCase();
+}
+
+function renderMeta(){
   const t = I18N[lang];
-  note.textContent = t.saveNoteSaved;
-  clearTimeout(saveState._t);
-  saveState._t = setTimeout(()=>{ note.textContent = t.saveNoteDefault; }, 1200);
+  document.getElementById('appbarSub').textContent = t.subtitleWith(state.classField, state.subjectField);
+  document.getElementById('classField').value = state.classField || "";
+  document.getElementById('subjectField').value = state.subjectField || "";
+  document.getElementById('dateField').value = state.dateField || "";
+  document.getElementById('countBadge').textContent = t.countLabel(state.students.length);
+}
+
+function ratingRowsConfig(t){
+  return [
+    ["homework", t.colHomework],
+    ["classwork", t.colClasswork],
+    ["participation", t.colParticipation],
+    ["behavior", t.colBehavior],
+    ["understanding", t.colUnderstanding],
+    ["support", t.colSupport]
+  ];
+}
+
+function renderCards(){
+  const t = I18N[lang];
+  const content = document.getElementById('content');
+  content.innerHTML = "";
+
+  if(state.students.length === 0){
+    const empty = document.createElement('div');
+    empty.className = "empty-state";
+    empty.innerHTML = "<div class=\"emoji\">📋</div><p><strong>" + t.emptyTitle + "</strong><br>" + t.emptyHint + "</p>";
+    content.appendChild(empty);
+    renderMeta();
+    return;
+  }
+
+  state.students.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = "card";
+
+    const head = document.createElement('div');
+    head.className = "card-head";
+
+    const avatar = document.createElement('div');
+    avatar.className = "avatar";
+    avatar.textContent = initials(s.name);
+    head.appendChild(avatar);
+
+    const nameInput = document.createElement('input');
+    nameInput.className = "name-input";
+    nameInput.type = "text";
+    nameInput.placeholder = t.namePh;
+    nameInput.value = s.name;
+    nameInput.addEventListener('input', e => {
+      s.name = e.target.value;
+      avatar.textContent = initials(s.name);
+      persist();
+    });
+    head.appendChild(nameInput);
+
+    const delBtn = document.createElement('button');
+    delBtn.className = "card-menu-btn";
+    delBtn.textContent = "✕";
+    delBtn.addEventListener('click', () => {
+      if(confirm(t.deleteConfirm)){
+        state.students.splice(i, 1);
+        persist();
+        renderCards();
+        showToast(t.toastDeleted);
+      }
+    });
+    head.appendChild(delBtn);
+
+    card.appendChild(head);
+
+    const grid = document.createElement('div');
+    grid.className = "rating-grid";
+    ratingRowsConfig(t).forEach(([col, label]) => {
+      const row = document.createElement('div');
+      row.className = "rating-row";
+
+      const lbl = document.createElement('div');
+      lbl.className = "rating-label";
+      lbl.textContent = label;
+      row.appendChild(lbl);
+
+      const opts = document.createElement('div');
+      opts.className = "rating-options";
+      RATE_KEYS.forEach(key => {
+        const chip = document.createElement('button');
+        chip.type = "button";
+        chip.className = "chip" + (s[col] === key ? " " + RATE_CLASS[key] : "");
+        chip.textContent = t.rateShort[key];
+        chip.addEventListener('click', () => {
+          s[col] = (s[col] === key) ? "" : key;
+          persist();
+          renderCards();
+        });
+        opts.appendChild(chip);
+      });
+      row.appendChild(opts);
+      grid.appendChild(row);
+    });
+    card.appendChild(grid);
+
+    const notesWrap = document.createElement('div');
+    notesWrap.className = "notes-wrap";
+    const notesInput = document.createElement('input');
+    notesInput.type = "text";
+    notesInput.placeholder = t.notesPh;
+    notesInput.value = s.notes;
+    notesInput.addEventListener('input', e => { s.notes = e.target.value; persist(); });
+    notesWrap.appendChild(notesInput);
+    card.appendChild(notesWrap);
+
+    content.appendChild(card);
+  });
+
+  renderMeta();
 }
 
 function applyLanguage(){
@@ -387,130 +700,48 @@ function applyLanguage(){
   html.setAttribute('dir', t.dir);
   document.getElementById('pageTitle').textContent = t.pageTitle;
   document.getElementById('titleText').textContent = t.title;
+  document.getElementById('sheetTitle').textContent = t.sheetTitle;
   document.getElementById('lblClass').textContent = t.lblClass;
   document.getElementById('lblSubject').textContent = t.lblSubject;
   document.getElementById('lblDate').textContent = t.lblDate;
   document.getElementById('classField').placeholder = t.classPh;
   document.getElementById('subjectField').placeholder = t.subjectPh;
-  document.getElementById('addStudentBtn').textContent = t.addStudent;
-  document.getElementById('addStudentBtn2').textContent = t.addStudent2;
-  document.getElementById('exportCsvBtn').textContent = t.exportCsv;
-  document.getElementById('printBtn').textContent = t.print;
-  document.getElementById('clearBtn').textContent = t.clearAll;
-  document.getElementById('saveNote').textContent = t.saveNoteDefault;
+  document.getElementById('actExportLabel').textContent = t.exportCsv;
+  document.getElementById('actPrintLabel').textContent = t.print;
+  document.getElementById('actClearLabel').textContent = t.clearAll;
+  document.getElementById('fabAdd').title = t.fabTitle;
 
   document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
   document.getElementById('btnEn').classList.toggle('active', lang === 'en');
 
-  renderHead();
-  renderBody();
-}
-
-function renderHead(){
-  const t = I18N[lang];
-  const headRow = document.getElementById('headRow');
-  const cols = [t.colNum, t.colName, t.colHomework, t.colClasswork, t.colParticipation, t.colBehavior, t.colUnderstanding, t.colSupport, t.colNotes, ""];
-  headRow.innerHTML = "";
-  cols.forEach(c => {
-    const th = document.createElement('th');
-    th.textContent = c;
-    headRow.appendChild(th);
-  });
-}
-
-function renderBody(){
-  const t = I18N[lang];
-  const tbody = document.getElementById('tbody');
-  tbody.innerHTML = "";
-
-  state.students.forEach((s, i) => {
-    const tr = document.createElement('tr');
-
-    const tdNum = document.createElement('td');
-    tdNum.className = "cell-num";
-    tdNum.textContent = i + 1;
-    tr.appendChild(tdNum);
-
-    const tdName = document.createElement('td');
-    tdName.className = "name-cell";
-    const nameInput = document.createElement('input');
-    nameInput.type = "text";
-    nameInput.placeholder = t.namePh;
-    nameInput.value = s.name;
-    nameInput.addEventListener('input', e => { s.name = e.target.value; saveState(); });
-    tdName.appendChild(nameInput);
-    tr.appendChild(tdName);
-
-    RATE_COLS.forEach(col => {
-      const td = document.createElement('td');
-      const sel = document.createElement('select');
-      sel.className = "rate";
-      sel.setAttribute('data-val', s[col] || "");
-      RATE_KEYS.forEach(key => {
-        const o = document.createElement('option');
-        o.value = key;
-        o.textContent = t.rates[key];
-        if(s[col] === key) o.selected = true;
-        sel.appendChild(o);
-      });
-      sel.addEventListener('change', e => {
-        s[col] = e.target.value;
-        sel.setAttribute('data-val', e.target.value);
-        saveState();
-      });
-      td.appendChild(sel);
-      tr.appendChild(td);
-    });
-
-    const tdNotes = document.createElement('td');
-    tdNotes.className = "notes-cell";
-    const notesInput = document.createElement('input');
-    notesInput.type = "text";
-    notesInput.placeholder = t.notesPh;
-    notesInput.value = s.notes;
-    notesInput.addEventListener('input', e => { s.notes = e.target.value; saveState(); });
-    tdNotes.appendChild(notesInput);
-    tr.appendChild(tdNotes);
-
-    const tdAction = document.createElement('td');
-    tdAction.className = "row-actions";
-    const delBtn = document.createElement('button');
-    delBtn.className = "del-row";
-    delBtn.title = t.deleteRow;
-    delBtn.textContent = "✕";
-    delBtn.addEventListener('click', () => {
-      state.students.splice(i, 1);
-      if(state.students.length === 0) state.students.push(newStudent());
-      saveState();
-      renderBody();
-    });
-    tdAction.appendChild(delBtn);
-    tr.appendChild(tdAction);
-
-    tbody.appendChild(tr);
-  });
+  renderCards();
 }
 
 function addStudent(){
   state.students.push(newStudent());
-  saveState();
-  renderBody();
-  const inputs = document.querySelectorAll('.name-cell input');
-  if(inputs.length) inputs[inputs.length - 1].focus();
+  persist();
+  renderCards();
+  showToast(I18N[lang].toastAdded);
+  const inputs = document.querySelectorAll('.name-input');
+  if(inputs.length){
+    const last = inputs[inputs.length - 1];
+    last.focus();
+    last.scrollIntoView({behavior:"smooth", block:"center"});
+  }
 }
 
 function exportCsv(){
   const t = I18N[lang];
-  const headers = [t.colNum, t.colName, t.colHomework, t.colClasswork, t.colParticipation, t.colBehavior, t.colUnderstanding, t.colSupport, t.colNotes];
+  const cols = ratingRowsConfig(t);
+  const headers = [t.numHeader, t.nameHeader, ...cols.map(c=>c[1]), t.notesHeader];
   const rows = state.students.map((s,i) => [
     i+1, s.name,
-    t.rates[s.homework]||"", t.rates[s.classwork]||"", t.rates[s.participation]||"",
-    t.rates[s.behavior]||"", t.rates[s.understanding]||"", t.rates[s.support]||"",
+    ...cols.map(([col]) => s[col] ? t.rateShort[s[col]] : ""),
     s.notes
   ]);
   let csv = "\uFEFF" + headers.join(",") + "\n";
   rows.forEach(r => {
-    csv += r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",") + "\n";
+    csv += r.map(v => "\"" + String(v).replace(/"/g,'""') + "\"").join(",") + "\n";
   });
   const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
   const url = URL.createObjectURL(blob);
@@ -518,7 +749,7 @@ function exportCsv(){
   const cls = state.classField ? state.classField.replace(/\s+/g,'_') : "class";
   const dt = state.dateField || new Date().toISOString().slice(0,10);
   a.href = url;
-  a.download = `followup_${cls}_${dt}.csv`;
+  a.download = "followup_" + cls + "_" + dt + ".csv";
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -529,34 +760,48 @@ function setLang(newLang){
   applyLanguage();
 }
 
-document.getElementById('classField').addEventListener('input', e => { state.classField = e.target.value; saveState(); });
-document.getElementById('subjectField').addEventListener('input', e => { state.subjectField = e.target.value; saveState(); });
-document.getElementById('dateField').addEventListener('input', e => { state.dateField = e.target.value; saveState(); });
+function openSheet(){
+  document.getElementById('sheetOverlay').classList.add('open');
+  document.getElementById('bottomSheet').classList.add('open');
+}
+function closeSheet(){
+  document.getElementById('sheetOverlay').classList.remove('open');
+  document.getElementById('bottomSheet').classList.remove('open');
+}
 
-document.getElementById('addStudentBtn').addEventListener('click', addStudent);
-document.getElementById('addStudentBtn2').addEventListener('click', addStudent);
-document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
-document.getElementById('printBtn').addEventListener('click', () => window.print());
+document.getElementById('classField').addEventListener('input', e => { state.classField = e.target.value; persist(); renderMeta(); });
+document.getElementById('subjectField').addEventListener('input', e => { state.subjectField = e.target.value; persist(); renderMeta(); });
+document.getElementById('dateField').addEventListener('input', e => { state.dateField = e.target.value; persist(); });
+
+document.getElementById('fabAdd').addEventListener('click', addStudent);
+document.getElementById('exportCsvBtn').addEventListener('click', () => { exportCsv(); closeSheet(); });
+document.getElementById('printBtn').addEventListener('click', () => { closeSheet(); setTimeout(()=>window.print(), 200); });
 document.getElementById('clearBtn').addEventListener('click', () => {
   const t = I18N[lang];
   if(confirm(t.confirmClear)){
-    state.students = [newStudent()];
+    state.students = [];
     state.classField = "";
     state.subjectField = "";
     state.dateField = "";
-    saveState();
-    renderBody();
+    persist();
+    renderCards();
+    closeSheet();
   }
 });
+document.getElementById('menuBtn').addEventListener('click', openSheet);
+document.getElementById('sheetOverlay').addEventListener('click', closeSheet);
 
 document.getElementById('btnAr').addEventListener('click', () => setLang('ar'));
 document.getElementById('btnEn').addEventListener('click', () => setLang('en'));
 
 loadState();
 applyLanguage();
-document.getElementById('classField').value = state.classField || "";
-document.getElementById('subjectField').value = state.subjectField || "";
-document.getElementById('dateField').value = state.dateField || "";
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
