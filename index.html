@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>سجل متابعة الطلاب</title>
+<title id="pageTitle">سجل متابعة الطلاب</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
     --navy:#1e3a5f;
@@ -22,11 +22,13 @@
   *{box-sizing:border-box;}
   body{
     margin:0;
-    font-family:'Tajawal', sans-serif;
+    font-family:'Tajawal', 'Inter', sans-serif;
     background:var(--paper);
     color:var(--ink);
     padding:24px;
   }
+  html[dir="ltr"] body{ font-family:'Inter', 'Tajawal', sans-serif; }
+
   .sheet{
     max-width:1400px;
     margin:0 auto;
@@ -38,7 +40,13 @@
   .top{
     padding:22px 28px 18px;
     border-bottom:3px solid var(--navy);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    flex-wrap:wrap;
   }
+  .top-main{flex:1; min-width:260px;}
   .top h1{
     margin:0 0 14px;
     font-size:26px;
@@ -69,6 +77,29 @@
     color:var(--ink);
   }
   .meta input:focus{outline:none; border-bottom-color:var(--navy);}
+
+  .lang-switch{
+    display:flex;
+    border:1.5px solid var(--navy);
+    border-radius:8px;
+    overflow:hidden;
+    height:36px;
+    flex-shrink:0;
+  }
+  .lang-switch button{
+    border:none;
+    background:#fff;
+    color:var(--navy);
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:700;
+    padding:0 16px;
+    cursor:pointer;
+  }
+  .lang-switch button.active{
+    background:var(--navy);
+    color:#fff;
+  }
 
   .toolbar{
     display:flex;
@@ -120,7 +151,7 @@
   }
   tbody td{
     border-bottom:1px solid var(--line);
-    border-right:1px solid var(--line);
+    border-inline-end:1px solid var(--line);
     padding:0;
   }
   tbody tr:nth-child(even){background:var(--row-alt);}
@@ -159,10 +190,10 @@
     cursor:pointer;
   }
   select.rate:focus{outline:2px solid var(--navy); outline-offset:-2px;}
-  select.rate[data-val="ممتاز"]{color:var(--good);}
-  select.rate[data-val="جيد"]{color:#2f6f8f;}
-  select.rate[data-val="متوسط"]{color:var(--warn);}
-  select.rate[data-val="ضعيف"]{color:var(--bad);}
+  select.rate[data-val="EXCELLENT"]{color:var(--good);}
+  select.rate[data-val="GOOD"]{color:#2f6f8f;}
+  select.rate[data-val="AVERAGE"]{color:var(--warn);}
+  select.rate[data-val="WEAK"]{color:var(--bad);}
 
   .notes-cell input{min-width:180px;}
 
@@ -190,7 +221,7 @@
 
   @media print{
     body{padding:0; background:#fff;}
-    .toolbar, .add-row-bar, .del-row, .row-actions{display:none !important;}
+    .toolbar, .add-row-bar, .del-row, .row-actions, .lang-switch{display:none !important;}
     .sheet{box-shadow:none; border-radius:0;}
     select.rate{-webkit-appearance:none; appearance:none;}
   }
@@ -206,52 +237,115 @@
 
 <div class="sheet">
   <div class="top">
-    <h1>سجل متابعة الطلاب</h1>
-    <div class="meta">
-      <label>الفصل <input type="text" id="classField" placeholder="مثال: 7A"></label>
-      <label>المادة <input type="text" id="subjectField" placeholder="اسم المادة"></label>
-      <label>التاريخ <input type="date" id="dateField"></label>
+    <div class="top-main">
+      <h1 id="titleText">سجل متابعة الطلاب</h1>
+      <div class="meta">
+        <label><span id="lblClass">الفصل</span> <input type="text" id="classField"></label>
+        <label><span id="lblSubject">المادة</span> <input type="text" id="subjectField"></label>
+        <label><span id="lblDate">التاريخ</span> <input type="date" id="dateField"></label>
+      </div>
+    </div>
+    <div class="lang-switch">
+      <button id="btnAr" class="active">AR</button>
+      <button id="btnEn">EN</button>
     </div>
   </div>
 
   <div class="toolbar">
-    <button class="btn-primary" id="addStudentBtn">+ إضافة طالب</button>
-    <button class="btn-ghost" id="exportCsvBtn">تصدير CSV</button>
-    <button class="btn-ghost" id="printBtn">طباعة / PDF</button>
-    <button class="btn-danger" id="clearBtn">مسح الكل</button>
+    <button class="btn-primary" id="addStudentBtn"></button>
+    <button class="btn-ghost" id="exportCsvBtn"></button>
+    <button class="btn-ghost" id="printBtn"></button>
+    <button class="btn-danger" id="clearBtn"></button>
     <div class="spacer"></div>
-    <span class="save-note" id="saveNote">يتم الحفظ تلقائيًا على هذا الجهاز</span>
+    <span class="save-note" id="saveNote"></span>
   </div>
 
   <div class="table-wrap">
     <table>
       <thead>
-        <tr>
-          <th>م</th>
-          <th style="min-width:220px;">اسم الطالب</th>
-          <th>الواجب</th>
-          <th>الفصل</th>
-          <th>المشاركة</th>
-          <th>السلوك</th>
-          <th>الفهم</th>
-          <th>الدعم</th>
-          <th style="min-width:200px;">ملاحظات</th>
-          <th></th>
-        </tr>
+        <tr id="headRow"></tr>
       </thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
 
   <div class="add-row-bar">
-    <button class="btn-primary" id="addStudentBtn2">+ إضافة طالب جديد</button>
+    <button class="btn-primary" id="addStudentBtn2"></button>
   </div>
 </div>
 
 <script>
-const RATE_OPTIONS = ["", "ممتاز", "جيد", "متوسط", "ضعيف"];
+const RATE_KEYS = ["", "EXCELLENT", "GOOD", "AVERAGE", "WEAK"];
 const RATE_COLS = ["homework","classwork","participation","behavior","understanding","support"];
 const STORAGE_KEY = "student_followup_sheet_v1";
+const LANG_KEY = "student_followup_lang";
+
+const I18N = {
+  ar: {
+    dir: "rtl",
+    pageTitle: "سجل متابعة الطلاب",
+    title: "سجل متابعة الطلاب",
+    lblClass: "الفصل",
+    lblSubject: "المادة",
+    lblDate: "التاريخ",
+    classPh: "مثال: 7A",
+    subjectPh: "اسم المادة",
+    colNum: "م",
+    colName: "اسم الطالب",
+    namePh: "اسم الطالب",
+    colHomework: "الواجب",
+    colClasswork: "الفصل",
+    colParticipation: "المشاركة",
+    colBehavior: "السلوك",
+    colUnderstanding: "الفهم",
+    colSupport: "الدعم",
+    colNotes: "ملاحظات",
+    notesPh: "ملاحظات إضافية",
+    addStudent: "+ إضافة طالب",
+    addStudent2: "+ إضافة طالب جديد",
+    exportCsv: "تصدير CSV",
+    print: "طباعة / PDF",
+    clearAll: "مسح الكل",
+    saveNoteDefault: "يتم الحفظ تلقائيًا على هذا الجهاز",
+    saveNoteSaved: "تم الحفظ ✓",
+    deleteRow: "حذف الطالب",
+    confirmClear: "هل تريد مسح كل البيانات في هذا الفصل؟ لا يمكن التراجع.",
+    rates: { "": "—", EXCELLENT:"ممتاز", GOOD:"جيد", AVERAGE:"متوسط", WEAK:"ضعيف" }
+  },
+  en: {
+    dir: "ltr",
+    pageTitle: "Student Follow-up Sheet",
+    title: "Student Follow-up Sheet",
+    lblClass: "Class",
+    lblSubject: "Subject",
+    lblDate: "Date",
+    classPh: "e.g. 7A",
+    subjectPh: "Subject name",
+    colNum: "No.",
+    colName: "Student Name",
+    namePh: "Student name",
+    colHomework: "Homework",
+    colClasswork: "Classwork",
+    colParticipation: "Participation",
+    colBehavior: "Behavior",
+    colUnderstanding: "Understanding",
+    colSupport: "Support",
+    colNotes: "Notes",
+    notesPh: "Additional notes",
+    addStudent: "+ Add Student",
+    addStudent2: "+ Add New Student",
+    exportCsv: "Export CSV",
+    print: "Print / PDF",
+    clearAll: "Clear All",
+    saveNoteDefault: "Autosaved on this device",
+    saveNoteSaved: "Saved ✓",
+    deleteRow: "Delete student",
+    confirmClear: "Clear all data for this class? This cannot be undone.",
+    rates: { "": "—", EXCELLENT:"Excellent", GOOD:"Good", AVERAGE:"Average", WEAK:"Weak" }
+  }
+};
+
+let lang = localStorage.getItem(LANG_KEY) || "ar";
 
 let state = {
   classField: "",
@@ -264,7 +358,7 @@ function newStudent(){
   return { name:"", homework:"", classwork:"", participation:"", behavior:"", understanding:"", support:"", notes:"" };
 }
 
-function load(){
+function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw){
@@ -277,19 +371,55 @@ function load(){
   }
 }
 
-function save(){
+function saveState(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   const note = document.getElementById('saveNote');
-  note.textContent = "تم الحفظ ✓";
-  clearTimeout(save._t);
-  save._t = setTimeout(()=>{ note.textContent = "يتم الحفظ تلقائيًا على هذا الجهاز"; }, 1200);
+  const t = I18N[lang];
+  note.textContent = t.saveNoteSaved;
+  clearTimeout(saveState._t);
+  saveState._t = setTimeout(()=>{ note.textContent = t.saveNoteDefault; }, 1200);
 }
 
-function render(){
-  document.getElementById('classField').value = state.classField || "";
-  document.getElementById('subjectField').value = state.subjectField || "";
-  document.getElementById('dateField').value = state.dateField || "";
+function applyLanguage(){
+  const t = I18N[lang];
+  const html = document.getElementById('htmlRoot');
+  html.setAttribute('lang', lang);
+  html.setAttribute('dir', t.dir);
+  document.getElementById('pageTitle').textContent = t.pageTitle;
+  document.getElementById('titleText').textContent = t.title;
+  document.getElementById('lblClass').textContent = t.lblClass;
+  document.getElementById('lblSubject').textContent = t.lblSubject;
+  document.getElementById('lblDate').textContent = t.lblDate;
+  document.getElementById('classField').placeholder = t.classPh;
+  document.getElementById('subjectField').placeholder = t.subjectPh;
+  document.getElementById('addStudentBtn').textContent = t.addStudent;
+  document.getElementById('addStudentBtn2').textContent = t.addStudent2;
+  document.getElementById('exportCsvBtn').textContent = t.exportCsv;
+  document.getElementById('printBtn').textContent = t.print;
+  document.getElementById('clearBtn').textContent = t.clearAll;
+  document.getElementById('saveNote').textContent = t.saveNoteDefault;
 
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+
+  renderHead();
+  renderBody();
+}
+
+function renderHead(){
+  const t = I18N[lang];
+  const headRow = document.getElementById('headRow');
+  const cols = [t.colNum, t.colName, t.colHomework, t.colClasswork, t.colParticipation, t.colBehavior, t.colUnderstanding, t.colSupport, t.colNotes, ""];
+  headRow.innerHTML = "";
+  cols.forEach(c => {
+    const th = document.createElement('th');
+    th.textContent = c;
+    headRow.appendChild(th);
+  });
+}
+
+function renderBody(){
+  const t = I18N[lang];
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = "";
 
@@ -305,9 +435,9 @@ function render(){
     tdName.className = "name-cell";
     const nameInput = document.createElement('input');
     nameInput.type = "text";
-    nameInput.placeholder = "اسم الطالب";
+    nameInput.placeholder = t.namePh;
     nameInput.value = s.name;
-    nameInput.addEventListener('input', e => { s.name = e.target.value; save(); });
+    nameInput.addEventListener('input', e => { s.name = e.target.value; saveState(); });
     tdName.appendChild(nameInput);
     tr.appendChild(tdName);
 
@@ -316,17 +446,17 @@ function render(){
       const sel = document.createElement('select');
       sel.className = "rate";
       sel.setAttribute('data-val', s[col] || "");
-      RATE_OPTIONS.forEach(opt => {
+      RATE_KEYS.forEach(key => {
         const o = document.createElement('option');
-        o.value = opt;
-        o.textContent = opt === "" ? "—" : opt;
-        if(s[col] === opt) o.selected = true;
+        o.value = key;
+        o.textContent = t.rates[key];
+        if(s[col] === key) o.selected = true;
         sel.appendChild(o);
       });
       sel.addEventListener('change', e => {
         s[col] = e.target.value;
         sel.setAttribute('data-val', e.target.value);
-        save();
+        saveState();
       });
       td.appendChild(sel);
       tr.appendChild(td);
@@ -336,9 +466,9 @@ function render(){
     tdNotes.className = "notes-cell";
     const notesInput = document.createElement('input');
     notesInput.type = "text";
-    notesInput.placeholder = "ملاحظات إضافية";
+    notesInput.placeholder = t.notesPh;
     notesInput.value = s.notes;
-    notesInput.addEventListener('input', e => { s.notes = e.target.value; save(); });
+    notesInput.addEventListener('input', e => { s.notes = e.target.value; saveState(); });
     tdNotes.appendChild(notesInput);
     tr.appendChild(tdNotes);
 
@@ -346,13 +476,13 @@ function render(){
     tdAction.className = "row-actions";
     const delBtn = document.createElement('button');
     delBtn.className = "del-row";
-    delBtn.title = "حذف الطالب";
+    delBtn.title = t.deleteRow;
     delBtn.textContent = "✕";
     delBtn.addEventListener('click', () => {
       state.students.splice(i, 1);
       if(state.students.length === 0) state.students.push(newStudent());
-      save();
-      render();
+      saveState();
+      renderBody();
     });
     tdAction.appendChild(delBtn);
     tr.appendChild(tdAction);
@@ -363,16 +493,20 @@ function render(){
 
 function addStudent(){
   state.students.push(newStudent());
-  save();
-  render();
+  saveState();
+  renderBody();
   const inputs = document.querySelectorAll('.name-cell input');
   if(inputs.length) inputs[inputs.length - 1].focus();
 }
 
 function exportCsv(){
-  const headers = ["م","اسم الطالب","الواجب","الفصل","المشاركة","السلوك","الفهم","الدعم","ملاحظات"];
+  const t = I18N[lang];
+  const headers = [t.colNum, t.colName, t.colHomework, t.colClasswork, t.colParticipation, t.colBehavior, t.colUnderstanding, t.colSupport, t.colNotes];
   const rows = state.students.map((s,i) => [
-    i+1, s.name, s.homework, s.classwork, s.participation, s.behavior, s.understanding, s.support, s.notes
+    i+1, s.name,
+    t.rates[s.homework]||"", t.rates[s.classwork]||"", t.rates[s.participation]||"",
+    t.rates[s.behavior]||"", t.rates[s.understanding]||"", t.rates[s.support]||"",
+    s.notes
   ]);
   let csv = "\uFEFF" + headers.join(",") + "\n";
   rows.forEach(r => {
@@ -384,32 +518,45 @@ function exportCsv(){
   const cls = state.classField ? state.classField.replace(/\s+/g,'_') : "class";
   const dt = state.dateField || new Date().toISOString().slice(0,10);
   a.href = url;
-  a.download = `متابعة_${cls}_${dt}.csv`;
+  a.download = `followup_${cls}_${dt}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
-document.getElementById('classField').addEventListener('input', e => { state.classField = e.target.value; save(); });
-document.getElementById('subjectField').addEventListener('input', e => { state.subjectField = e.target.value; save(); });
-document.getElementById('dateField').addEventListener('input', e => { state.dateField = e.target.value; save(); });
+function setLang(newLang){
+  lang = newLang;
+  localStorage.setItem(LANG_KEY, lang);
+  applyLanguage();
+}
+
+document.getElementById('classField').addEventListener('input', e => { state.classField = e.target.value; saveState(); });
+document.getElementById('subjectField').addEventListener('input', e => { state.subjectField = e.target.value; saveState(); });
+document.getElementById('dateField').addEventListener('input', e => { state.dateField = e.target.value; saveState(); });
 
 document.getElementById('addStudentBtn').addEventListener('click', addStudent);
 document.getElementById('addStudentBtn2').addEventListener('click', addStudent);
 document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
 document.getElementById('printBtn').addEventListener('click', () => window.print());
 document.getElementById('clearBtn').addEventListener('click', () => {
-  if(confirm("هل تريد مسح كل البيانات في هذا الفصل؟ لا يمكن التراجع.")){
+  const t = I18N[lang];
+  if(confirm(t.confirmClear)){
     state.students = [newStudent()];
     state.classField = "";
     state.subjectField = "";
     state.dateField = "";
-    save();
-    render();
+    saveState();
+    renderBody();
   }
 });
 
-load();
-render();
+document.getElementById('btnAr').addEventListener('click', () => setLang('ar'));
+document.getElementById('btnEn').addEventListener('click', () => setLang('en'));
+
+loadState();
+applyLanguage();
+document.getElementById('classField').value = state.classField || "";
+document.getElementById('subjectField').value = state.subjectField || "";
+document.getElementById('dateField').value = state.dateField || "";
 </script>
 </body>
 </html>
