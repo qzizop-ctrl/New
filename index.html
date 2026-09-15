@@ -58,14 +58,16 @@
   }
 
   /* ---------- App bar ---------- */
-  .appbar{
+  .header-sticky{
     position:sticky;
     top:0;
     z-index:20;
+    box-shadow:0 2px 8px rgba(21,42,69,.25);
+  }
+  .appbar{
     background:var(--navy);
     color:#fff;
     padding:14px 14px 10px;
-    box-shadow:0 2px 8px rgba(21,42,69,.25);
   }
   .appbar-row{
     display:flex;
@@ -126,43 +128,48 @@
     border-radius:20px;
   }
 
-  /* ---------- Class tabs ---------- */
-  .class-tabs{
+  /* ---------- App logo (home screen) ---------- */
+  .app-logo{
+    width:30px;
+    height:30px;
+    border-radius:8px;
+    flex-shrink:0;
+    display:none;
+  }
+
+  /* ---------- Home: class list ---------- */
+  .class-card{
     display:flex;
-    gap:8px;
-    overflow-x:auto;
-    padding:10px 14px 2px;
-    scrollbar-width:none;
-  }
-  .class-tabs::-webkit-scrollbar{ display:none; }
-  .class-chip{
-    flex-shrink:0;
-    border:1.5px solid rgba(255,255,255,.35);
-    background:transparent;
-    color:#dbe6f2;
-    font-size:13px;
-    font-weight:700;
-    padding:7px 14px;
-    border-radius:20px;
+    align-items:center;
+    gap:12px;
+    background:var(--surface);
+    border-radius:var(--radius-card);
+    box-shadow:0 1px 2px rgba(21,42,69,.06), 0 1px 8px rgba(21,42,69,.05);
+    padding:14px;
+    margin-bottom:12px;
     cursor:pointer;
-    white-space:nowrap;
   }
-  .class-chip.active{
-    background:#fff;
-    color:var(--navy);
-    border-color:#fff;
+  .class-card:active{ background:#f5f8fb; }
+  .class-card-icon{
+    width:46px; height:46px; border-radius:13px;
+    background:var(--navy); color:#fff; font-weight:900; font-size:18px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
   }
-  .class-chip-add{
-    flex-shrink:0;
-    border:1.5px dashed rgba(255,255,255,.5);
-    background:transparent;
-    color:#dbe6f2;
-    font-size:15px;
-    font-weight:900;
-    width:34px;
-    height:32px;
-    border-radius:20px;
-    cursor:pointer;
+  .class-card-body{ flex:1; min-width:0; }
+  .class-card-name{ font-size:16px; font-weight:800; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .class-card-meta{ font-size:12.5px; color:var(--muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .class-card-actions{ display:flex; gap:4px; flex-shrink:0; }
+  .class-card-actions button{
+    width:30px; height:30px; border-radius:50%; border:none;
+    background:var(--bg); color:var(--muted); font-size:13px; cursor:pointer;
+  }
+  .class-card-actions button.mc-delete{ color:var(--weak); }
+  .class-card-chevron{ color:var(--muted); font-size:20px; flex-shrink:0; }
+
+  .content.anim-in{ animation:contentFadeIn .2s ease; }
+  @keyframes contentFadeIn{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
   }
 
   /* ---------- Date nav ---------- */
@@ -418,25 +425,13 @@
   .sheet-action.danger{ color:var(--weak); }
   .sheet-action .sa-icon{ width:22px; text-align:center; font-size:16px; flex-shrink:0; }
 
-  .manage-class-row{
-    display:flex; align-items:center; gap:10px; padding:10px 20px;
-  }
-  .manage-class-row .mc-name{
-    flex:1; font-size:14px; font-weight:700; color:var(--ink);
-  }
-  .manage-class-row button{
-    border:none; background:var(--bg); color:var(--muted);
-    width:30px; height:30px; border-radius:50%; font-size:13px; cursor:pointer; flex-shrink:0;
-  }
-  .manage-class-row button.mc-delete{ color:var(--weak); }
-
   @media (max-width:380px){
     .rating-label{ width:64px; font-size:11.5px; }
     .chip{ font-size:10.5px; padding:6px 2px; }
   }
 
   @media print{
-    .appbar, .fab, .toast, .sheet-overlay, .bottom-sheet, .card-menu-btn, .class-tabs, .date-nav, .subbar{ display:none !important; }
+    .appbar, .fab, .toast, .sheet-overlay, .bottom-sheet, .card-menu-btn, .date-nav, .subbar{ display:none !important; }
     body{ background:#fff; }
   }
 </style>
@@ -445,37 +440,39 @@
 
 <div class="app">
 
-  <div class="appbar">
-    <div class="appbar-row">
-      <div class="appbar-title">
-        <h1 id="titleText">سجل متابعة الطلاب</h1>
-        <p class="appbar-sub" id="appbarSub">—</p>
+  <div class="header-sticky">
+    <div class="appbar">
+      <div class="appbar-row">
+        <button class="icon-btn" id="backBtn" style="display:none;">‹</button>
+        <img src="icon-192.png" class="app-logo" id="appLogo" alt="">
+        <div class="appbar-title">
+          <h1 id="titleText">سجل متابعة الطلاب</h1>
+          <p class="appbar-sub" id="appbarSub">—</p>
+        </div>
+        <div class="lang-pill">
+          <button id="btnAr" class="active">AR</button>
+          <button id="btnEn">EN</button>
+        </div>
+        <button class="icon-btn" id="menuBtn" title="Menu" style="display:none;">⋮</button>
       </div>
-      <div class="lang-pill">
-        <button id="btnAr" class="active">AR</button>
-        <button id="btnEn">EN</button>
-      </div>
-      <button class="icon-btn" id="menuBtn" title="Menu">⋮</button>
+    </div>
+
+    <div class="date-nav" id="dateNavWrap" style="display:none;">
+      <button class="nav-arrow" id="datePrev">‹</button>
+      <input type="date" id="dateInput">
+      <button class="nav-arrow" id="dateNext">›</button>
+      <button class="today-btn" id="todayBtn"></button>
     </div>
   </div>
 
-  <div class="class-tabs" id="classTabs"></div>
-
-  <div class="date-nav">
-    <button class="nav-arrow" id="datePrev">‹</button>
-    <input type="date" id="dateInput">
-    <button class="nav-arrow" id="dateNext">›</button>
-    <button class="today-btn" id="todayBtn"></button>
-  </div>
-
-  <div class="subbar">
+  <div class="subbar" id="searchRow" style="display:none;">
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
       <input type="text" id="searchInput" class="search-input">
       <button class="search-clear" id="searchClear" style="display:none;">✕</button>
     </div>
   </div>
-  <div class="subbar subbar-count">
+  <div class="subbar subbar-count" id="countRow" style="display:none;">
     <span class="count-badge" id="countBadge"></span>
   </div>
 
@@ -487,22 +484,19 @@
   <div class="sheet-overlay" id="sheetOverlay"></div>
   <div class="bottom-sheet" id="bottomSheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title" id="sheetTitle">إعدادات</div>
+    <div class="sheet-title" id="sheetTitle">إعدادات الفصل</div>
 
     <div class="sheet-field">
-      <label id="lblSubject">المادة (للفصل الحالي)</label>
+      <label id="lblSubject">المادة</label>
       <input type="text" id="subjectField">
     </div>
-
-    <div class="sheet-divider"></div>
-    <div class="sheet-title" id="manageClassesTitle" style="font-size:14px;">إدارة الفصول</div>
-    <div id="manageClassesList"></div>
 
     <div class="sheet-divider"></div>
 
     <button class="sheet-action" id="exportCsvBtn"><span class="sa-icon">⭳</span><span id="actExportLabel"></span></button>
     <button class="sheet-action" id="printBtn"><span class="sa-icon">⎙</span><span id="actPrintLabel"></span></button>
     <button class="sheet-action danger" id="clearDayBtn"><span class="sa-icon">✕</span><span id="actClearDayLabel"></span></button>
+    <button class="sheet-action danger" id="deleteClassBtn"><span class="sa-icon">🗑</span><span id="actDeleteClassLabel"></span></button>
   </div>
 
 </div>
@@ -520,11 +514,11 @@ const I18N = {
     dir: "rtl",
     pageTitle: "سجل متابعة الطلاب",
     title: "سجل متابعة الطلاب",
-    subtitleWith: (c,s) => [c,s].filter(Boolean).join(" · ") || "بدون تفاصيل",
-    lblSubject: "المادة (للفصل الحالي)",
+    subtitleWith: (subject) => subject || "بدون مادة محددة",
+    homeSubtitle: (n) => n === 0 ? "ابدأ بإضافة أول فصل" : (n === 1 ? "فصل واحد" : n + " فصول"),
+    lblSubject: "المادة",
     subjectPh: "اسم المادة",
-    sheetTitle: "إعدادات",
-    manageClassesTitle: "إدارة الفصول",
+    sheetTitle: "إعدادات الفصل",
     namePh: "اسم الطالب",
     colHomework: "الواجب",
     colClasswork: "الفصل",
@@ -536,14 +530,17 @@ const I18N = {
     exportCsv: "تصدير CSV لليوم ده",
     print: "طباعة / PDF",
     clearDay: "مسح بيانات اليوم ده",
+    deleteClassAction: "حذف هذا الفصل بالكامل",
     fabTitle: "إضافة طالب",
+    addClassFabTitle: "إضافة فصل",
     countLabel: (n) => n === 0 ? "لا يوجد طلاب" : (n === 1 ? "طالب واحد" : n + " طلاب"),
     toastAdded: "تمت إضافة الطالب",
     toastDeleted: "تم حذف الطالب",
     toastSaved: "تم الحفظ ✓",
     toastClassAdded: "تم إضافة الفصل",
+    toastClassDeleted: "تم حذف الفصل",
     emptyTitleNoClass: "مفيش فصول لسه",
-    emptyHintNoClass: "دوس على + جنب اسم الفصول تحت لإضافة أول فصل",
+    emptyHintNoClass: "دوس على الزرار تحت لإضافة أول فصل",
     emptyTitle: "مفيش طلاب في الفصل ده لسه",
     emptyHint: "دوس على زرار + تحت عشان تضيف أول طالب",
     addFirstClassBtn: "+ إضافة فصل",
@@ -570,11 +567,11 @@ const I18N = {
     dir: "ltr",
     pageTitle: "Student Follow-up Sheet",
     title: "Follow-up Sheet",
-    subtitleWith: (c,s) => [c,s].filter(Boolean).join(" · ") || "No details set",
-    lblSubject: "Subject (for this class)",
+    subtitleWith: (subject) => subject || "No subject set",
+    homeSubtitle: (n) => n === 0 ? "Start by adding your first class" : (n === 1 ? "1 class" : n + " classes"),
+    lblSubject: "Subject",
     subjectPh: "Subject name",
-    sheetTitle: "Settings",
-    manageClassesTitle: "Manage classes",
+    sheetTitle: "Class Settings",
     namePh: "Student name",
     colHomework: "Homework",
     colClasswork: "Classwork",
@@ -586,14 +583,17 @@ const I18N = {
     exportCsv: "Export today's CSV",
     print: "Print / PDF",
     clearDay: "Clear this day's data",
+    deleteClassAction: "Delete this class entirely",
     fabTitle: "Add student",
+    addClassFabTitle: "Add class",
     countLabel: (n) => n === 0 ? "No students yet" : (n === 1 ? "1 student" : n + " students"),
     toastAdded: "Student added",
     toastDeleted: "Student removed",
     toastSaved: "Saved ✓",
     toastClassAdded: "Class added",
+    toastClassDeleted: "Class deleted",
     emptyTitleNoClass: "No classes yet",
-    emptyHintNoClass: "Tap + next to the class tabs above to add your first class",
+    emptyHintNoClass: "Tap the button below to add your first class",
     emptyTitle: "No students in this class yet",
     emptyHint: "Tap the + button below to add your first student",
     addFirstClassBtn: "+ Add class",
@@ -766,32 +766,32 @@ function ratingRowsConfig(t){
 }
 
 /* ---------------- Class tabs ---------------- */
-function renderClassTabs(){
-  const t = I18N[lang];
-  const wrap = document.getElementById('classTabs');
-  wrap.innerHTML = "";
-  state.classes.forEach(c => {
-    const chip = document.createElement('button');
-    chip.className = "class-chip" + (c.id === state.currentClassId ? " active" : "");
-    chip.textContent = c.name || "?";
-    chip.addEventListener('click', () => {
-      if(state.currentClassId !== c.id){
-        state.currentClassId = c.id;
-        searchQuery = "";
-        document.getElementById('searchInput').value = "";
-        document.getElementById('searchClear').style.display = 'none';
-        persist();
-        renderAll();
-      }
-    });
-    wrap.appendChild(chip);
-  });
-  const addChip = document.createElement('button');
-  addChip.className = "class-chip-add";
-  addChip.textContent = "+";
-  addChip.addEventListener('click', addClass);
-  wrap.appendChild(addChip);
+/* ---------------- Screen navigation ---------------- */
+let screen = "home";
+
+function openClass(classId){
+  state.currentClassId = classId;
+  screen = "class";
+  searchQuery = "";
+  history.pushState({ screen: "class", classId }, "", "#class");
+  renderApp();
 }
+
+function goHome(){
+  screen = "home";
+  renderApp();
+}
+
+window.addEventListener('popstate', (e) => {
+  const st = e.state;
+  if(st && st.screen === "class" && st.classId){
+    state.currentClassId = st.classId;
+    screen = "class";
+  } else {
+    screen = "home";
+  }
+  renderApp();
+});
 
 function addClass(){
   const t = I18N[lang];
@@ -801,85 +801,44 @@ function addClass(){
   if(!trimmed) return;
   const cls = { id: uid(), name: trimmed, subject: "", students: [], days: {} };
   state.classes.push(cls);
-  state.currentClassId = cls.id;
   persist();
-  renderAll();
   showToast(t.toastClassAdded);
+  openClass(cls.id);
 }
 
-/* ---------------- Date nav ---------------- */
-function renderDateNav(){
+function renameClass(c){
   const t = I18N[lang];
-  document.getElementById('dateInput').value = state.currentDate;
-  document.getElementById('todayBtn').textContent = t.todayBtnLabel;
+  const newName = prompt(t.renameClassPrompt, c.name);
+  if(newName === null) return;
+  const trimmed = newName.trim();
+  if(!trimmed) return;
+  c.name = trimmed;
+  persist();
+  renderApp();
 }
 
-/* ---------------- Meta / subtitle / count ---------------- */
-function renderMeta(){
+function deleteClass(c){
   const t = I18N[lang];
-  const cls = getCurrentClass();
-  document.getElementById('appbarSub').textContent = t.subtitleWith(cls ? cls.name : "", cls ? cls.subject : "");
-  document.getElementById('subjectField').value = cls ? (cls.subject || "") : "";
-  const visibleCount = cls ? cls.students.filter(matchesSearch).length : 0;
-  document.getElementById('countBadge').textContent = t.countLabel(visibleCount);
+  if(!confirm(t.confirmDeleteClass)) return;
+  const idx = state.classes.findIndex(x => x.id === c.id);
+  if(idx >= 0) state.classes.splice(idx, 1);
+  if(state.currentClassId === c.id) state.currentClassId = null;
+  persist();
+  showToast(t.toastClassDeleted);
+  if(screen === "class"){
+    history.back();
+  } else {
+    renderApp();
+  }
 }
 
-/* ---------------- Manage classes list (in sheet) ---------------- */
-function renderManageClasses(){
-  const t = I18N[lang];
-  const list = document.getElementById('manageClassesList');
-  list.innerHTML = "";
-  state.classes.forEach(c => {
-    const row = document.createElement('div');
-    row.className = "manage-class-row";
-
-    const nameSpan = document.createElement('div');
-    nameSpan.className = "mc-name";
-    nameSpan.textContent = c.name;
-    row.appendChild(nameSpan);
-
-    const renameBtn = document.createElement('button');
-    renameBtn.textContent = "✎";
-    renameBtn.addEventListener('click', () => {
-      const newName = prompt(t.renameClassPrompt, c.name);
-      if(newName === null) return;
-      const trimmed = newName.trim();
-      if(!trimmed) return;
-      c.name = trimmed;
-      persist();
-      renderAll();
-    });
-    row.appendChild(renameBtn);
-
-    const delBtn = document.createElement('button');
-    delBtn.className = "mc-delete";
-    delBtn.textContent = "✕";
-    delBtn.addEventListener('click', () => {
-      if(confirm(t.confirmDeleteClass)){
-        const idx = state.classes.findIndex(x => x.id === c.id);
-        if(idx >= 0) state.classes.splice(idx, 1);
-        if(state.currentClassId === c.id){
-          state.currentClassId = state.classes.length ? state.classes[0].id : null;
-        }
-        persist();
-        renderAll();
-      }
-    });
-    row.appendChild(delBtn);
-
-    list.appendChild(row);
-  });
-}
-
-/* ---------------- Cards ---------------- */
-function renderCards(){
+/* ---------------- Home screen: class list ---------------- */
+function renderHomeList(){
   const t = I18N[lang];
   const content = document.getElementById('content');
   content.innerHTML = "";
 
-  const cls = getCurrentClass();
-
-  if(!cls){
+  if(state.classes.length === 0){
     const empty = document.createElement('div');
     empty.className = "empty-state";
     empty.innerHTML = "<div class=\"emoji\">🏫</div><p><strong>" + t.emptyTitleNoClass + "</strong><br>" + t.emptyHintNoClass + "</p>";
@@ -889,16 +848,116 @@ function renderCards(){
     btn.addEventListener('click', addClass);
     empty.appendChild(btn);
     content.appendChild(empty);
-    renderMeta();
     return;
   }
+
+  state.classes.forEach(c => {
+    const card = document.createElement('div');
+    card.className = "class-card";
+    card.addEventListener('click', () => openClass(c.id));
+
+    const icon = document.createElement('div');
+    icon.className = "class-card-icon";
+    icon.textContent = (c.name || "?").charAt(0).toUpperCase();
+    card.appendChild(icon);
+
+    const body = document.createElement('div');
+    body.className = "class-card-body";
+    const nameEl = document.createElement('div');
+    nameEl.className = "class-card-name";
+    nameEl.textContent = c.name;
+    const metaEl = document.createElement('div');
+    metaEl.className = "class-card-meta";
+    metaEl.textContent = [c.subject || t.subtitleWith(""), t.countLabel(c.students.length)].filter(Boolean).join(" · ");
+    body.appendChild(nameEl);
+    body.appendChild(metaEl);
+    card.appendChild(body);
+
+    const actions = document.createElement('div');
+    actions.className = "class-card-actions";
+    const renameBtn = document.createElement('button');
+    renameBtn.textContent = "✎";
+    renameBtn.addEventListener('click', (e) => { e.stopPropagation(); renameClass(c); });
+    const delBtn = document.createElement('button');
+    delBtn.className = "mc-delete";
+    delBtn.textContent = "✕";
+    delBtn.addEventListener('click', (e) => { e.stopPropagation(); deleteClass(c); });
+    actions.appendChild(renameBtn);
+    actions.appendChild(delBtn);
+    card.appendChild(actions);
+
+    const chevron = document.createElement('div');
+    chevron.className = "class-card-chevron";
+    chevron.textContent = (lang === 'ar') ? "‹" : "›";
+    card.appendChild(chevron);
+
+    content.appendChild(card);
+  });
+}
+
+/* ---------------- Date nav ---------------- */
+function renderDateNav(){
+  const t = I18N[lang];
+  document.getElementById('dateInput').value = state.currentDate;
+  document.getElementById('todayBtn').textContent = t.todayBtnLabel;
+}
+
+/* ---------------- Header chrome + meta ---------------- */
+function updateChrome(){
+  const t = I18N[lang];
+  const isHome = screen === "home" || !getCurrentClass();
+  document.getElementById('backBtn').style.display = isHome ? 'none' : 'flex';
+  document.getElementById('appLogo').style.display = isHome ? 'block' : 'none';
+  document.getElementById('menuBtn').style.display = isHome ? 'none' : 'flex';
+  document.getElementById('dateNavWrap').style.display = isHome ? 'none' : 'flex';
+  document.getElementById('searchRow').style.display = isHome ? 'none' : 'flex';
+  document.getElementById('countRow').style.display = isHome ? 'none' : 'flex';
+
+  if(isHome){
+    document.getElementById('titleText').textContent = t.title;
+    document.getElementById('appbarSub').textContent = t.homeSubtitle(state.classes.length);
+    document.getElementById('fabAdd').title = t.addClassFabTitle;
+  } else {
+    const cls = getCurrentClass();
+    document.getElementById('titleText').textContent = cls.name;
+    document.getElementById('appbarSub').textContent = t.subtitleWith(cls.subject);
+    document.getElementById('subjectField').value = cls.subject || "";
+    document.getElementById('fabAdd').title = t.fabTitle;
+  }
+}
+
+function renderApp(){
+  updateChrome();
+  const isHome = screen === "home" || !getCurrentClass();
+  if(isHome){
+    renderHomeList();
+  } else {
+    renderDateNav();
+    renderCards();
+  }
+  const contentEl = document.getElementById('content');
+  contentEl.classList.remove('anim-in');
+  void contentEl.offsetWidth;
+  contentEl.classList.add('anim-in');
+}
+
+/* ---------------- Cards ---------------- */
+function renderCards(){
+  const t = I18N[lang];
+  const content = document.getElementById('content');
+  content.innerHTML = "";
+
+  const cls = getCurrentClass();
+  if(!cls){ goHome(); return; }
+
+  const visibleCountAll = cls.students.filter(matchesSearch).length;
+  document.getElementById('countBadge').textContent = t.countLabel(visibleCountAll);
 
   if(cls.students.length === 0){
     const empty = document.createElement('div');
     empty.className = "empty-state";
     empty.innerHTML = "<div class=\"emoji\">📋</div><p><strong>" + t.emptyTitle + "</strong><br>" + t.emptyHint + "</p>";
     content.appendChild(empty);
-    renderMeta();
     return;
   }
 
@@ -911,7 +970,6 @@ function renderCards(){
     noRes.className = "no-results";
     noRes.innerHTML = "<strong>" + t.noResultsTitle + "</strong><br>" + t.noResultsHint;
     content.appendChild(noRes);
-    renderMeta();
     return;
   }
 
@@ -1059,15 +1117,6 @@ function renderCards(){
 
     content.appendChild(card);
   });
-
-  renderMeta();
-}
-
-function renderAll(){
-  renderClassTabs();
-  renderDateNav();
-  renderManageClasses();
-  renderCards();
 }
 
 function applyLanguage(){
@@ -1076,21 +1125,19 @@ function applyLanguage(){
   html.setAttribute('lang', lang);
   html.setAttribute('dir', t.dir);
   document.getElementById('pageTitle').textContent = t.pageTitle;
-  document.getElementById('titleText').textContent = t.title;
   document.getElementById('sheetTitle').textContent = t.sheetTitle;
-  document.getElementById('manageClassesTitle').textContent = t.manageClassesTitle;
   document.getElementById('lblSubject').textContent = t.lblSubject;
   document.getElementById('subjectField').placeholder = t.subjectPh;
   document.getElementById('actExportLabel').textContent = t.exportCsv;
   document.getElementById('actPrintLabel').textContent = t.print;
   document.getElementById('actClearDayLabel').textContent = t.clearDay;
-  document.getElementById('fabAdd').title = t.fabTitle;
+  document.getElementById('actDeleteClassLabel').textContent = t.deleteClassAction;
   document.getElementById('searchInput').placeholder = (lang === 'ar') ? "ابحث بالاسم..." : "Search by name...";
 
   document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
   document.getElementById('btnEn').classList.toggle('active', lang === 'en');
 
-  renderAll();
+  renderApp();
 }
 
 function addStudent(){
@@ -1157,10 +1204,15 @@ document.getElementById('subjectField').addEventListener('input', e => {
   if(!cls) return;
   cls.subject = e.target.value;
   persist();
-  renderMeta();
+  const t = I18N[lang];
+  document.getElementById('appbarSub').textContent = t.subtitleWith(cls.subject);
 });
 
-document.getElementById('fabAdd').addEventListener('click', addStudent);
+document.getElementById('fabAdd').addEventListener('click', () => {
+  if(screen === "home" || !getCurrentClass()) addClass();
+  else addStudent();
+});
+document.getElementById('backBtn').addEventListener('click', () => history.back());
 document.getElementById('exportCsvBtn').addEventListener('click', () => { exportCsv(); closeSheet(); });
 document.getElementById('printBtn').addEventListener('click', () => { closeSheet(); setTimeout(()=>window.print(), 200); });
 document.getElementById('clearDayBtn').addEventListener('click', () => {
@@ -1173,6 +1225,12 @@ document.getElementById('clearDayBtn').addEventListener('click', () => {
     renderCards();
     closeSheet();
   }
+});
+document.getElementById('deleteClassBtn').addEventListener('click', () => {
+  const cls = getCurrentClass();
+  if(!cls) return;
+  closeSheet();
+  deleteClass(cls);
 });
 document.getElementById('menuBtn').addEventListener('click', openSheet);
 document.getElementById('sheetOverlay').addEventListener('click', closeSheet);
@@ -1237,6 +1295,7 @@ window.addEventListener('beforeunload', (e) => {
 });
 
 loadState();
+history.replaceState({ screen: "home" }, "", "#home");
 applyLanguage();
 
 if ('serviceWorker' in navigator) {
