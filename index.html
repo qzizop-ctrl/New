@@ -333,6 +333,40 @@
   }
   .save-btn:active{ filter:brightness(0.92); }
 
+  .locked-bar{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin:0 12px 12px; padding:9px 12px;
+    background:var(--excellent-bg); border:1.5px solid var(--excellent); border-radius:10px;
+  }
+  .locked-text{ font-size:12px; font-weight:700; color:var(--excellent); display:flex; align-items:center; gap:6px; }
+  .edit-btn{
+    background:var(--surface); color:var(--excellent); border:1.5px solid var(--excellent); border-radius:8px;
+    padding:6px 15px; font-size:12.5px; font-weight:800; cursor:pointer; flex-shrink:0;
+  }
+  .edit-btn:active{ background:var(--excellent-bg); }
+
+  .avatar-wrap{ position:relative; flex-shrink:0; }
+  .avatar-badge{
+    position:absolute; bottom:-2px; inset-inline-end:-2px;
+    width:16px; height:16px; border-radius:50%;
+    background:var(--excellent); color:#fff; font-size:10px; font-weight:900;
+    display:flex; align-items:center; justify-content:center;
+    border:2px solid var(--surface);
+  }
+
+  .card-head input.name-input[disabled]{
+    color:var(--muted);
+    cursor:default;
+  }
+  .notes-wrap input[disabled]{
+    color:var(--muted);
+    cursor:default;
+  }
+  .rating-options.locked{ pointer-events:none; }
+  .rating-options.locked .chip:not(.sel-excellent):not(.sel-good):not(.sel-average):not(.sel-weak){
+    opacity:.35;
+  }
+
   /* ---------- FAB ---------- */
   .fab{
     position:fixed;
@@ -520,6 +554,8 @@ const I18N = {
     renameClassPrompt: "اسم الفصل الجديد:",
     unsavedText: "تغييرات غير محفوظة",
     saveBtn: "حفظ",
+    lockedText: "تم الحفظ",
+    editBtn: "تعديل",
     noResultsTitle: "مفيش نتائج",
     noResultsHint: "جرب اسم تاني أو امسح البحث",
     todayBtnLabel: "اليوم",
@@ -568,6 +604,8 @@ const I18N = {
     renameClassPrompt: "New class name:",
     unsavedText: "Unsaved changes",
     saveBtn: "Save",
+    lockedText: "Saved",
+    editBtn: "Edit",
     noResultsTitle: "No results",
     noResultsHint: "Try a different name or clear the search",
     todayBtnLabel: "Today",
@@ -603,7 +641,7 @@ let state = {
 };
 
 function blankDayFields(){
-  return { homework:"", classwork:"", participation:"", behavior:"", understanding:"", support:"", notes:"", _dirty:false };
+  return { homework:"", classwork:"", participation:"", behavior:"", understanding:"", support:"", notes:"", _dirty:false, locked:false };
 }
 
 function migrateFromV2(){
@@ -621,7 +659,7 @@ function migrateFromV2(){
       dayRecord[students[i].id] = {
         homework: s.homework || "", classwork: s.classwork || "", participation: s.participation || "",
         behavior: s.behavior || "", understanding: s.understanding || "", support: s.support || "",
-        notes: s.notes || ""
+        notes: s.notes || "", locked: true
       };
     });
     const cls = {
@@ -879,6 +917,7 @@ function renderCards(){
 
   visible.forEach(({ s, idx }) => {
     const dayRec = ensureStudentDay(cls, state.currentDate, s.id);
+    const locked = !!dayRec.locked;
 
     const card = document.createElement('div');
     card.className = "card";
@@ -886,16 +925,26 @@ function renderCards(){
     const head = document.createElement('div');
     head.className = "card-head";
 
+    const avatarWrap = document.createElement('div');
+    avatarWrap.className = "avatar-wrap";
     const avatar = document.createElement('div');
     avatar.className = "avatar";
     avatar.textContent = initials(s.name);
-    head.appendChild(avatar);
+    avatarWrap.appendChild(avatar);
+    if(locked){
+      const badge = document.createElement('div');
+      badge.className = "avatar-badge";
+      badge.textContent = "✓";
+      avatarWrap.appendChild(badge);
+    }
+    head.appendChild(avatarWrap);
 
     const nameInput = document.createElement('input');
     nameInput.className = "name-input";
     nameInput.type = "text";
     nameInput.placeholder = t.namePh;
     nameInput.value = s.name;
+    nameInput.disabled = locked;
     head.appendChild(nameInput);
 
     const delBtn = document.createElement('button');
@@ -928,17 +977,19 @@ function renderCards(){
       row.appendChild(lbl);
 
       const opts = document.createElement('div');
-      opts.className = "rating-options";
+      opts.className = "rating-options" + (locked ? " locked" : "");
       RATE_KEYS.forEach(key => {
         const chip = document.createElement('button');
         chip.type = "button";
         chip.className = "chip" + (dayRec[col] === key ? " " + RATE_CLASS[key] : "");
         chip.textContent = t.rateShort[key];
-        chip.addEventListener('click', () => {
-          dayRec[col] = (dayRec[col] === key) ? "" : key;
-          dayRec._dirty = true;
-          renderCards();
-        });
+        if(!locked){
+          chip.addEventListener('click', () => {
+            dayRec[col] = (dayRec[col] === key) ? "" : key;
+            dayRec._dirty = true;
+            renderCards();
+          });
+        }
         opts.appendChild(chip);
       });
       row.appendChild(opts);
@@ -952,39 +1003,59 @@ function renderCards(){
     notesInput.type = "text";
     notesInput.placeholder = t.notesPh;
     notesInput.value = dayRec.notes;
+    notesInput.disabled = locked;
     notesWrap.appendChild(notesInput);
     card.appendChild(notesWrap);
 
-    const unsavedBar = document.createElement('div');
-    unsavedBar.className = "unsaved-bar" + ((s._dirty || dayRec._dirty) ? " show" : "");
-    const unsavedLabel = document.createElement('span');
-    unsavedLabel.className = "unsaved-text";
-    unsavedLabel.textContent = t.unsavedText;
-    const saveBtn = document.createElement('button');
-    saveBtn.className = "save-btn";
-    saveBtn.textContent = t.saveBtn;
-    saveBtn.addEventListener('click', () => {
-      s._dirty = false;
-      dayRec._dirty = false;
-      persist();
-      unsavedBar.classList.remove('show');
-      showToast(t.toastSaved);
-    });
-    unsavedBar.appendChild(unsavedLabel);
-    unsavedBar.appendChild(saveBtn);
-    card.appendChild(unsavedBar);
+    if(locked){
+      const lockedBar = document.createElement('div');
+      lockedBar.className = "locked-bar";
+      const lockedLabel = document.createElement('span');
+      lockedLabel.className = "locked-text";
+      lockedLabel.textContent = "✓ " + t.lockedText;
+      const editBtn = document.createElement('button');
+      editBtn.className = "edit-btn";
+      editBtn.textContent = t.editBtn;
+      editBtn.addEventListener('click', () => {
+        dayRec.locked = false;
+        renderCards();
+      });
+      lockedBar.appendChild(lockedLabel);
+      lockedBar.appendChild(editBtn);
+      card.appendChild(lockedBar);
+    } else {
+      const unsavedBar = document.createElement('div');
+      unsavedBar.className = "unsaved-bar" + ((s._dirty || dayRec._dirty) ? " show" : "");
+      const unsavedLabel = document.createElement('span');
+      unsavedLabel.className = "unsaved-text";
+      unsavedLabel.textContent = t.unsavedText;
+      const saveBtn = document.createElement('button');
+      saveBtn.className = "save-btn";
+      saveBtn.textContent = t.saveBtn;
+      saveBtn.addEventListener('click', () => {
+        s._dirty = false;
+        dayRec._dirty = false;
+        dayRec.locked = true;
+        persist();
+        renderCards();
+        showToast(t.toastSaved);
+      });
+      unsavedBar.appendChild(unsavedLabel);
+      unsavedBar.appendChild(saveBtn);
+      card.appendChild(unsavedBar);
 
-    nameInput.addEventListener('input', e => {
-      s.name = e.target.value;
-      avatar.textContent = initials(s.name);
-      s._dirty = true;
-      unsavedBar.classList.add('show');
-    });
-    notesInput.addEventListener('input', e => {
-      dayRec.notes = e.target.value;
-      dayRec._dirty = true;
-      unsavedBar.classList.add('show');
-    });
+      nameInput.addEventListener('input', e => {
+        s.name = e.target.value;
+        avatar.textContent = initials(s.name);
+        s._dirty = true;
+        unsavedBar.classList.add('show');
+      });
+      notesInput.addEventListener('input', e => {
+        dayRec.notes = e.target.value;
+        dayRec._dirty = true;
+        unsavedBar.classList.add('show');
+      });
+    }
 
     content.appendChild(card);
   });
@@ -1010,7 +1081,6 @@ function applyLanguage(){
   document.getElementById('manageClassesTitle').textContent = t.manageClassesTitle;
   document.getElementById('lblSubject').textContent = t.lblSubject;
   document.getElementById('subjectField').placeholder = t.subjectPh;
-  document.getElementById('searchInput').placeholder = "";
   document.getElementById('actExportLabel').textContent = t.exportCsv;
   document.getElementById('actPrintLabel').textContent = t.print;
   document.getElementById('actClearDayLabel').textContent = t.clearDay;
