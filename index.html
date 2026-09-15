@@ -1281,14 +1281,25 @@ function printFullExport(html){
   const area = document.getElementById('printArea');
   area.innerHTML = html;
   document.body.classList.add('print-full-export');
+
+  let cleaned = false;
   const cleanup = () => {
+    if(cleaned) return;
+    cleaned = true;
     document.body.classList.remove('print-full-export');
     area.innerHTML = "";
     window.removeEventListener('afterprint', cleanup);
   };
+
   window.addEventListener('afterprint', cleanup);
-  setTimeout(() => window.print(), 50);
-  setTimeout(cleanup, 4000);
+
+  // Give the browser a moment to paint the new content before invoking print,
+  // then let the user interact with the native print/save dialog for as long as
+  // they need — only fall back to a timed cleanup as a last resort safety net.
+  setTimeout(() => {
+    window.print();
+  }, 100);
+  setTimeout(cleanup, 120000);
 }
 
 function exportClassPdf(cls){
