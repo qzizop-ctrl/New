@@ -57,13 +57,14 @@
     position:relative;
   }
 
+  /* ---------- App bar ---------- */
   .appbar{
     position:sticky;
     top:0;
     z-index:20;
     background:var(--navy);
     color:#fff;
-    padding:14px 14px calc(12px + 2px);
+    padding:14px 14px 10px;
     box-shadow:0 2px 8px rgba(21,42,69,.25);
   }
   .appbar-row{
@@ -71,10 +72,7 @@
     align-items:center;
     gap:10px;
   }
-  .appbar-title{
-    flex:1;
-    min-width:0;
-  }
+  .appbar-title{ flex:1; min-width:0; }
   .appbar-title h1{
     margin:0;
     font-size:18px;
@@ -128,31 +126,154 @@
     border-radius:20px;
   }
 
+  /* ---------- Class tabs ---------- */
+  .class-tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:10px 14px 2px;
+    scrollbar-width:none;
+  }
+  .class-tabs::-webkit-scrollbar{ display:none; }
+  .class-chip{
+    flex-shrink:0;
+    border:1.5px solid rgba(255,255,255,.35);
+    background:transparent;
+    color:#dbe6f2;
+    font-size:13px;
+    font-weight:700;
+    padding:7px 14px;
+    border-radius:20px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .class-chip.active{
+    background:#fff;
+    color:var(--navy);
+    border-color:#fff;
+  }
+  .class-chip-add{
+    flex-shrink:0;
+    border:1.5px dashed rgba(255,255,255,.5);
+    background:transparent;
+    color:#dbe6f2;
+    font-size:15px;
+    font-weight:900;
+    width:34px;
+    height:32px;
+    border-radius:20px;
+    cursor:pointer;
+  }
+
+  /* ---------- Date nav ---------- */
+  .date-nav{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px 0;
+  }
+  .date-nav button.nav-arrow{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    border:1.5px solid var(--line);
+    background:var(--surface);
+    color:var(--navy);
+    font-size:16px;
+    font-weight:900;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .date-nav input[type="date"]{
+    flex:1;
+    border:1.5px solid var(--line);
+    background:var(--surface);
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--ink);
+    text-align:center;
+  }
+  .date-nav input[type="date"]:focus{ outline:none; border-color:var(--navy); }
+  .today-btn{
+    flex-shrink:0;
+    border:1.5px solid var(--navy);
+    background:var(--surface);
+    color:var(--navy);
+    font-size:12.5px;
+    font-weight:800;
+    padding:0 12px;
+    height:32px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+
+  /* ---------- Search / count row ---------- */
   .subbar{
     display:flex;
     align-items:center;
     gap:10px;
-    padding:12px 14px 4px;
+    padding:10px 14px 0;
   }
-  .count-badge{
-    font-size:12.5px;
-    font-weight:700;
+  .subbar-count{ padding:8px 14px 4px; }
+  .count-badge{ font-size:12.5px; font-weight:700; color:var(--muted); }
+
+  .search-wrap{ flex:1; position:relative; display:flex; align-items:center; }
+  .search-icon{
+    position:absolute;
+    inset-inline-start:12px;
     color:var(--muted);
+    font-size:16px;
+    pointer-events:none;
+  }
+  .search-input{
+    width:100%;
+    border:1.5px solid var(--line);
+    background:var(--surface);
+    border-radius:12px;
+    padding:10px 38px;
+    font-size:14px;
+    color:var(--ink);
+  }
+  .search-input:focus{ outline:none; border-color:var(--navy); }
+  .search-clear{
+    position:absolute;
+    inset-inline-end:8px;
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    border:none;
+    background:var(--line);
+    color:var(--muted);
+    font-size:12px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
 
-  .content{
-    flex:1;
-    padding:8px 14px calc(96px + var(--safe-bottom));
-  }
+  /* ---------- Content ---------- */
+  .content{ flex:1; padding:8px 14px calc(96px + var(--safe-bottom)); }
 
-  .empty-state{
-    text-align:center;
-    padding:60px 20px;
-    color:var(--muted);
-  }
+  .empty-state{ text-align:center; padding:60px 20px; color:var(--muted); }
   .empty-state .emoji{font-size:40px; margin-bottom:10px;}
   .empty-state p{margin:0; font-size:14.5px; line-height:1.6;}
+  .empty-state button.cta{
+    margin-top:14px;
+    background:var(--navy);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:10px 20px;
+    font-size:13.5px;
+    font-weight:700;
+    cursor:pointer;
+  }
 
+  .no-results{ text-align:center; padding:50px 20px; color:var(--muted); font-size:14px; }
+
+  /* ---------- Student card ---------- */
   .card{
     background:var(--surface);
     border-radius:var(--radius-card);
@@ -160,230 +281,120 @@
     margin-bottom:12px;
     overflow:hidden;
   }
-  .card-head{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:12px 12px 8px;
-  }
+  .card-head{ display:flex; align-items:center; gap:10px; padding:12px 12px 8px; }
   .avatar{
-    width:36px;
-    height:36px;
-    border-radius:50%;
-    background:var(--navy);
-    color:#fff;
-    font-weight:900;
-    font-size:15px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-shrink:0;
+    width:36px; height:36px; border-radius:50%;
+    background:var(--navy); color:#fff; font-weight:900; font-size:15px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
   }
   .card-head input.name-input{
-    flex:1;
-    min-width:0;
-    border:none;
-    background:transparent;
-    font-size:16px;
-    font-weight:700;
-    color:var(--ink);
-    padding:8px 4px;
-    border-bottom:1.5px solid transparent;
+    flex:1; min-width:0; border:none; background:transparent;
+    font-size:16px; font-weight:700; color:var(--ink);
+    padding:8px 4px; border-bottom:1.5px solid transparent;
   }
-  .card-head input.name-input:focus{
-    outline:none;
-    border-bottom-color:var(--navy);
-  }
+  .card-head input.name-input:focus{ outline:none; border-bottom-color:var(--navy); }
   .card-menu-btn{
-    width:32px;
-    height:32px;
-    border-radius:50%;
-    border:none;
-    background:transparent;
-    color:var(--muted);
-    font-size:18px;
-    cursor:pointer;
-    flex-shrink:0;
+    width:32px; height:32px; border-radius:50%; border:none;
+    background:transparent; color:var(--muted); font-size:18px; cursor:pointer; flex-shrink:0;
   }
   .card-menu-btn:active{background:var(--bg);}
 
-  .rating-grid{
-    padding:2px 12px 10px;
-    display:flex;
-    flex-direction:column;
-    gap:7px;
-  }
-  .rating-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .rating-label{
-    width:78px;
-    flex-shrink:0;
-    font-size:12.5px;
-    color:var(--muted);
-    font-weight:700;
-  }
-  .rating-options{
-    flex:1;
-    display:grid;
-    grid-template-columns:repeat(4, 1fr);
-    gap:5px;
-  }
+  .rating-grid{ padding:2px 12px 10px; display:flex; flex-direction:column; gap:7px; }
+  .rating-row{ display:flex; align-items:center; gap:8px; }
+  .rating-label{ width:78px; flex-shrink:0; font-size:12.5px; color:var(--muted); font-weight:700; }
+  .rating-options{ flex:1; display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; }
   .chip{
-    border:1.5px solid var(--line);
-    background:var(--surface);
-    color:var(--muted);
-    font-size:11.5px;
-    font-weight:700;
-    border-radius:var(--radius-chip);
-    padding:7px 2px;
-    text-align:center;
-    cursor:pointer;
-    line-height:1.2;
+    border:1.5px solid var(--line); background:var(--surface); color:var(--muted);
+    font-size:11.5px; font-weight:700; border-radius:var(--radius-chip);
+    padding:7px 2px; text-align:center; cursor:pointer; line-height:1.2;
   }
   .chip.sel-excellent{ background:var(--excellent-bg); border-color:var(--excellent); color:var(--excellent); }
   .chip.sel-good{ background:var(--good-bg); border-color:var(--good); color:var(--good); }
   .chip.sel-average{ background:var(--average-bg); border-color:var(--average); color:var(--average); }
   .chip.sel-weak{ background:var(--weak-bg); border-color:var(--weak); color:var(--weak); }
 
-  .notes-wrap{
-    padding:0 12px 14px;
-  }
+  .notes-wrap{ padding:0 12px 12px; }
   .notes-wrap input{
-    width:100%;
-    border:none;
-    background:var(--bg);
-    border-radius:10px;
-    padding:10px 12px;
-    font-size:13.5px;
-    color:var(--ink);
+    width:100%; border:none; background:var(--bg); border-radius:10px;
+    padding:10px 12px; font-size:13.5px; color:var(--ink);
   }
   .notes-wrap input:focus{outline:1.5px solid var(--navy);}
 
+  .unsaved-bar{
+    display:none; align-items:center; justify-content:space-between; gap:10px;
+    margin:0 12px 12px; padding:9px 12px;
+    background:var(--average-bg); border:1.5px solid var(--average); border-radius:10px;
+  }
+  .unsaved-bar.show{ display:flex; }
+  .unsaved-text{ font-size:12px; font-weight:700; color:var(--average); }
+  .save-btn{
+    background:var(--average); color:#fff; border:none; border-radius:8px;
+    padding:7px 16px; font-size:12.5px; font-weight:800; cursor:pointer; flex-shrink:0;
+  }
+  .save-btn:active{ filter:brightness(0.92); }
+
+  /* ---------- FAB ---------- */
   .fab{
     position:fixed;
     bottom:calc(24px + var(--safe-bottom));
     inset-inline-end:calc(50% - 280px + 20px);
-    width:58px;
-    height:58px;
-    border-radius:50%;
-    background:var(--accent);
-    color:#fff;
-    border:none;
-    font-size:26px;
+    width:58px; height:58px; border-radius:50%;
+    background:var(--accent); color:#fff; border:none; font-size:26px;
     box-shadow:0 4px 14px rgba(47,111,94,.45);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    z-index:15;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:15;
   }
   .fab:active{ filter:brightness(0.92); }
-  @media (max-width:600px){
-    .fab{ inset-inline-end:20px; }
-  }
+  @media (max-width:600px){ .fab{ inset-inline-end:20px; } }
 
+  /* ---------- Toast ---------- */
   .toast{
-    position:fixed;
-    bottom:calc(24px + var(--safe-bottom));
-    left:50%;
+    position:fixed; bottom:calc(24px + var(--safe-bottom)); left:50%;
     transform:translateX(-50%) translateY(20px);
-    background:var(--navy-dark);
-    color:#fff;
-    font-size:13px;
-    font-weight:700;
-    padding:10px 18px;
-    border-radius:30px;
-    opacity:0;
-    transition:opacity .2s ease, transform .2s ease;
-    z-index:40;
-    pointer-events:none;
-    white-space:nowrap;
+    background:var(--navy-dark); color:#fff; font-size:13px; font-weight:700;
+    padding:10px 18px; border-radius:30px; opacity:0;
+    transition:opacity .2s ease, transform .2s ease; z-index:40; pointer-events:none; white-space:nowrap;
   }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-  .sheet-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(20,30,45,.45);
-    z-index:50;
-    display:none;
-  }
+  /* ---------- Bottom sheet ---------- */
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(20,30,45,.45); z-index:50; display:none; }
   .sheet-overlay.open{ display:block; }
   .bottom-sheet{
-    position:fixed;
-    left:50%;
-    bottom:0;
-    transform:translateX(-50%) translateY(100%);
-    width:100%;
-    max-width:560px;
-    background:var(--surface);
-    border-radius:20px 20px 0 0;
-    z-index:51;
-    transition:transform .25s ease;
-    max-height:88vh;
-    overflow-y:auto;
+    position:fixed; left:50%; bottom:0; transform:translateX(-50%) translateY(100%);
+    width:100%; max-width:560px; background:var(--surface); border-radius:20px 20px 0 0;
+    z-index:51; transition:transform .25s ease; max-height:88vh; overflow-y:auto;
     padding-bottom:calc(20px + var(--safe-bottom));
   }
   .bottom-sheet.open{ transform:translateX(-50%) translateY(0); }
-  .sheet-handle{
-    width:38px;
-    height:4px;
-    background:var(--line);
-    border-radius:4px;
-    margin:10px auto 4px;
-  }
-  .sheet-title{
-    font-size:16px;
-    font-weight:900;
-    color:var(--navy);
-    padding:10px 20px 4px;
-  }
-  .sheet-field{
-    padding:10px 20px;
-  }
-  .sheet-field label{
-    display:block;
-    font-size:12.5px;
-    font-weight:700;
-    color:var(--muted);
-    margin-bottom:6px;
-  }
+  .sheet-handle{ width:38px; height:4px; background:var(--line); border-radius:4px; margin:10px auto 4px; }
+  .sheet-title{ font-size:16px; font-weight:900; color:var(--navy); padding:10px 20px 4px; }
+  .sheet-field{ padding:10px 20px; }
+  .sheet-field label{ display:block; font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:6px; }
   .sheet-field input{
-    width:100%;
-    border:1.5px solid var(--line);
-    border-radius:10px;
-    padding:11px 12px;
-    font-size:14.5px;
-    color:var(--ink);
-    background:var(--bg);
+    width:100%; border:1.5px solid var(--line); border-radius:10px; padding:11px 12px;
+    font-size:14.5px; color:var(--ink); background:var(--bg);
   }
   .sheet-field input:focus{ outline:none; border-color:var(--navy); }
   .sheet-divider{ height:1px; background:var(--line); margin:10px 20px; }
   .sheet-action{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    width:100%;
-    border:none;
-    background:none;
-    padding:14px 20px;
-    font-size:14.5px;
-    font-weight:700;
-    color:var(--ink);
-    text-align:start;
-    cursor:pointer;
+    display:flex; align-items:center; gap:12px; width:100%; border:none; background:none;
+    padding:14px 20px; font-size:14.5px; font-weight:700; color:var(--ink); text-align:start; cursor:pointer;
   }
   .sheet-action:active{ background:var(--bg); }
   .sheet-action.danger{ color:var(--weak); }
-  .sheet-action .sa-icon{
-    width:22px;
-    text-align:center;
-    font-size:16px;
-    flex-shrink:0;
+  .sheet-action .sa-icon{ width:22px; text-align:center; font-size:16px; flex-shrink:0; }
+
+  .manage-class-row{
+    display:flex; align-items:center; gap:10px; padding:10px 20px;
   }
+  .manage-class-row .mc-name{
+    flex:1; font-size:14px; font-weight:700; color:var(--ink);
+  }
+  .manage-class-row button{
+    border:none; background:var(--bg); color:var(--muted);
+    width:30px; height:30px; border-radius:50%; font-size:13px; cursor:pointer; flex-shrink:0;
+  }
+  .manage-class-row button.mc-delete{ color:var(--weak); }
 
   @media (max-width:380px){
     .rating-label{ width:64px; font-size:11.5px; }
@@ -391,7 +402,7 @@
   }
 
   @media print{
-    .appbar, .fab, .toast, .sheet-overlay, .bottom-sheet, .card-menu-btn{ display:none !important; }
+    .appbar, .fab, .toast, .sheet-overlay, .bottom-sheet, .card-menu-btn, .class-tabs, .date-nav, .subbar{ display:none !important; }
     body{ background:#fff; }
   }
 </style>
@@ -414,12 +425,27 @@
     </div>
   </div>
 
+  <div class="class-tabs" id="classTabs"></div>
+
+  <div class="date-nav">
+    <button class="nav-arrow" id="datePrev">‹</button>
+    <input type="date" id="dateInput">
+    <button class="nav-arrow" id="dateNext">›</button>
+    <button class="today-btn" id="todayBtn"></button>
+  </div>
+
   <div class="subbar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" class="search-input">
+      <button class="search-clear" id="searchClear" style="display:none;">✕</button>
+    </div>
+  </div>
+  <div class="subbar subbar-count">
     <span class="count-badge" id="countBadge"></span>
   </div>
 
-  <div class="content" id="content">
-  </div>
+  <div class="content" id="content"></div>
 
   <button class="fab" id="fabAdd" title="">+</button>
   <div class="toast" id="toast"></div>
@@ -427,26 +453,22 @@
   <div class="sheet-overlay" id="sheetOverlay"></div>
   <div class="bottom-sheet" id="bottomSheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title" id="sheetTitle">إعدادات الكشف</div>
+    <div class="sheet-title" id="sheetTitle">إعدادات</div>
 
     <div class="sheet-field">
-      <label id="lblClass">الفصل</label>
-      <input type="text" id="classField">
-    </div>
-    <div class="sheet-field">
-      <label id="lblSubject">المادة</label>
+      <label id="lblSubject">المادة (للفصل الحالي)</label>
       <input type="text" id="subjectField">
     </div>
-    <div class="sheet-field">
-      <label id="lblDate">التاريخ</label>
-      <input type="date" id="dateField">
-    </div>
+
+    <div class="sheet-divider"></div>
+    <div class="sheet-title" id="manageClassesTitle" style="font-size:14px;">إدارة الفصول</div>
+    <div id="manageClassesList"></div>
 
     <div class="sheet-divider"></div>
 
     <button class="sheet-action" id="exportCsvBtn"><span class="sa-icon">⭳</span><span id="actExportLabel"></span></button>
     <button class="sheet-action" id="printBtn"><span class="sa-icon">⎙</span><span id="actPrintLabel"></span></button>
-    <button class="sheet-action danger" id="clearBtn"><span class="sa-icon">✕</span><span id="actClearLabel"></span></button>
+    <button class="sheet-action danger" id="clearDayBtn"><span class="sa-icon">✕</span><span id="actClearDayLabel"></span></button>
   </div>
 
 </div>
@@ -454,7 +476,9 @@
 <script>
 const RATE_KEYS = ["EXCELLENT", "GOOD", "AVERAGE", "WEAK"];
 const RATE_CLASS = { EXCELLENT:"sel-excellent", GOOD:"sel-good", AVERAGE:"sel-average", WEAK:"sel-weak" };
-const STORAGE_KEY = "student_followup_sheet_v2";
+const FIELDS = ["homework","classwork","participation","behavior","understanding","support"];
+const STORAGE_KEY = "student_followup_sheet_v3";
+const OLD_STORAGE_KEY = "student_followup_sheet_v2";
 const LANG_KEY = "student_followup_lang";
 
 const I18N = {
@@ -463,12 +487,10 @@ const I18N = {
     pageTitle: "سجل متابعة الطلاب",
     title: "سجل متابعة الطلاب",
     subtitleWith: (c,s) => [c,s].filter(Boolean).join(" · ") || "بدون تفاصيل",
-    lblClass: "الفصل",
-    lblSubject: "المادة",
-    lblDate: "التاريخ",
-    classPh: "مثال: 7A",
+    lblSubject: "المادة (للفصل الحالي)",
     subjectPh: "اسم المادة",
-    sheetTitle: "إعدادات الكشف",
+    sheetTitle: "إعدادات",
+    manageClassesTitle: "إدارة الفصول",
     namePh: "اسم الطالب",
     colHomework: "الواجب",
     colClasswork: "الفصل",
@@ -477,33 +499,46 @@ const I18N = {
     colUnderstanding: "الفهم",
     colSupport: "الدعم",
     notesPh: "أضف ملاحظة...",
-    exportCsv: "تصدير CSV",
+    exportCsv: "تصدير CSV لليوم ده",
     print: "طباعة / PDF",
-    clearAll: "مسح كل البيانات",
+    clearDay: "مسح بيانات اليوم ده",
     fabTitle: "إضافة طالب",
     countLabel: (n) => n === 0 ? "لا يوجد طلاب" : (n === 1 ? "طالب واحد" : n + " طلاب"),
     toastAdded: "تمت إضافة الطالب",
     toastDeleted: "تم حذف الطالب",
-    emptyTitle: "مفيش طلاب لسه",
+    toastSaved: "تم الحفظ ✓",
+    toastClassAdded: "تم إضافة الفصل",
+    emptyTitleNoClass: "مفيش فصول لسه",
+    emptyHintNoClass: "دوس على + جنب اسم الفصول تحت لإضافة أول فصل",
+    emptyTitle: "مفيش طلاب في الفصل ده لسه",
     emptyHint: "دوس على زرار + تحت عشان تضيف أول طالب",
-    deleteConfirm: "حذف هذا الطالب؟",
-    confirmClear: "هل تريد مسح كل البيانات في هذا الفصل؟ لا يمكن التراجع.",
+    addFirstClassBtn: "+ إضافة فصل",
+    deleteConfirm: "حذف هذا الطالب نهائيًا من الفصل؟ هيتم حذف كل بياناته في كل الأيام ولا يمكن التراجع.",
+    confirmClearDay: "مسح كل بيانات هذا اليوم لهذا الفصل؟ أسماء الطلاب هتفضل موجودة. لا يمكن التراجع.",
+    confirmDeleteClass: "حذف هذا الفصل بالكامل مع كل طلابه وكل أيامه؟ لا يمكن التراجع.",
+    newClassPrompt: "اسم الفصل الجديد:",
+    renameClassPrompt: "اسم الفصل الجديد:",
+    unsavedText: "تغييرات غير محفوظة",
+    saveBtn: "حفظ",
+    noResultsTitle: "مفيش نتائج",
+    noResultsHint: "جرب اسم تاني أو امسح البحث",
+    todayBtnLabel: "اليوم",
+    unsavedWarning: "في تغييرات لسه متحفظتش.",
     rateShort: { EXCELLENT:"ممتاز", GOOD:"جيد", AVERAGE:"متوسط", WEAK:"ضعيف" },
     nameHeader: "اسم الطالب",
     notesHeader: "ملاحظات",
-    numHeader: "م"
+    numHeader: "م",
+    defaultClassName: "الفصل الأول"
   },
   en: {
     dir: "ltr",
     pageTitle: "Student Follow-up Sheet",
     title: "Follow-up Sheet",
     subtitleWith: (c,s) => [c,s].filter(Boolean).join(" · ") || "No details set",
-    lblClass: "Class",
-    lblSubject: "Subject",
-    lblDate: "Date",
-    classPh: "e.g. 7A",
+    lblSubject: "Subject (for this class)",
     subjectPh: "Subject name",
-    sheetTitle: "Sheet Settings",
+    sheetTitle: "Settings",
+    manageClassesTitle: "Manage classes",
     namePh: "Student name",
     colHomework: "Homework",
     colClasswork: "Classwork",
@@ -512,35 +547,95 @@ const I18N = {
     colUnderstanding: "Understanding",
     colSupport: "Support",
     notesPh: "Add a note...",
-    exportCsv: "Export CSV",
+    exportCsv: "Export today's CSV",
     print: "Print / PDF",
-    clearAll: "Clear all data",
+    clearDay: "Clear this day's data",
     fabTitle: "Add student",
     countLabel: (n) => n === 0 ? "No students yet" : (n === 1 ? "1 student" : n + " students"),
     toastAdded: "Student added",
     toastDeleted: "Student removed",
-    emptyTitle: "No students yet",
+    toastSaved: "Saved ✓",
+    toastClassAdded: "Class added",
+    emptyTitleNoClass: "No classes yet",
+    emptyHintNoClass: "Tap + next to the class tabs above to add your first class",
+    emptyTitle: "No students in this class yet",
     emptyHint: "Tap the + button below to add your first student",
-    deleteConfirm: "Delete this student?",
-    confirmClear: "Clear all data for this class? This cannot be undone.",
+    addFirstClassBtn: "+ Add class",
+    deleteConfirm: "Permanently remove this student from the class? All their data across every day will be deleted. This cannot be undone.",
+    confirmClearDay: "Clear all data for this day in this class? Student names will remain. This cannot be undone.",
+    confirmDeleteClass: "Delete this entire class, including all students and all days? This cannot be undone.",
+    newClassPrompt: "New class name:",
+    renameClassPrompt: "New class name:",
+    unsavedText: "Unsaved changes",
+    saveBtn: "Save",
+    noResultsTitle: "No results",
+    noResultsHint: "Try a different name or clear the search",
+    todayBtnLabel: "Today",
+    unsavedWarning: "You have unsaved changes.",
     rateShort: { EXCELLENT:"Excellent", GOOD:"Good", AVERAGE:"Average", WEAK:"Weak" },
     nameHeader: "Student Name",
     notesHeader: "Notes",
-    numHeader: "No."
+    numHeader: "No.",
+    defaultClassName: "Class 1"
   }
 };
 
 let lang = localStorage.getItem(LANG_KEY) || "ar";
+let searchQuery = "";
+
+function uid(){ return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,'0') + "-" + String(d.getDate()).padStart(2,'0');
+}
+function shiftDate(dateStr, delta){
+  const [y,m,d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  dt.setDate(dt.getDate()+delta);
+  return dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2,'0') + "-" + String(dt.getDate()).padStart(2,'0');
+}
 
 let state = {
-  classField: "",
-  subjectField: "",
-  dateField: "",
-  students: []
+  classes: [],
+  currentClassId: null,
+  currentDate: todayStr()
 };
 
-function newStudent(){
-  return { name:"", homework:"", classwork:"", participation:"", behavior:"", understanding:"", support:"", notes:"" };
+function blankDayFields(){
+  return { homework:"", classwork:"", participation:"", behavior:"", understanding:"", support:"", notes:"", _dirty:false };
+}
+
+function migrateFromV2(){
+  try{
+    const raw = localStorage.getItem(OLD_STORAGE_KEY);
+    if(!raw) return false;
+    const old = JSON.parse(raw);
+    if(!old || !old.students || old.students.length === 0) return false;
+    const t = I18N[lang];
+    const clsId = uid();
+    const dateStr = old.dateField || todayStr();
+    const students = old.students.map(s => ({ id: uid(), name: s.name || "" }));
+    const dayRecord = {};
+    old.students.forEach((s, i) => {
+      dayRecord[students[i].id] = {
+        homework: s.homework || "", classwork: s.classwork || "", participation: s.participation || "",
+        behavior: s.behavior || "", understanding: s.understanding || "", support: s.support || "",
+        notes: s.notes || ""
+      };
+    });
+    const cls = {
+      id: clsId,
+      name: old.classField || t.defaultClassName,
+      subject: old.subjectField || "",
+      students: students,
+      days: { [dateStr]: dayRecord }
+    };
+    state.classes = [cls];
+    state.currentClassId = clsId;
+    state.currentDate = dateStr;
+    return true;
+  }catch(e){ return false; }
 }
 
 function loadState(){
@@ -548,39 +643,77 @@ function loadState(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw){
       const parsed = JSON.parse(raw);
-      state = Object.assign(state, parsed);
+      if(parsed && parsed.classes) state = parsed;
+    } else {
+      migrateFromV2();
     }
   }catch(e){}
-  if(!state.students) state.students = [];
+
+  if(!state.classes) state.classes = [];
+  state.classes.forEach(c => {
+    if(!c.students) c.students = [];
+    if(!c.days) c.days = {};
+    c.students.forEach(s => { s._dirty = false; });
+  });
+  if(!state.currentDate) state.currentDate = todayStr();
+  if(!state.currentClassId && state.classes.length){
+    state.currentClassId = state.classes[0].id;
+  }
 }
 
 function persist(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const cleanClasses = state.classes.map(c => {
+    const cleanStudents = c.students.map(s => {
+      const copy = Object.assign({}, s);
+      delete copy._dirty;
+      return copy;
+    });
+    const cleanDays = {};
+    Object.keys(c.days || {}).forEach(dateStr => {
+      const dayObj = c.days[dateStr];
+      const cleanDay = {};
+      Object.keys(dayObj).forEach(sid => {
+        const rec = Object.assign({}, dayObj[sid]);
+        delete rec._dirty;
+        cleanDay[sid] = rec;
+      });
+      cleanDays[dateStr] = cleanDay;
+    });
+    return { id: c.id, name: c.name, subject: c.subject || "", students: cleanStudents, days: cleanDays };
+  });
+  const toSave = { classes: cleanClasses, currentClassId: state.currentClassId, currentDate: state.currentDate };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
 }
 
 let toastTimer = null;
 function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=> t.classList.remove('show'), 1400);
+  toastTimer = setTimeout(()=> el.classList.remove('show'), 1400);
 }
 
 function initials(name){
   const trimmed = (name || "").trim();
   if(!trimmed) return "?";
-  const parts = trimmed.split(/\s+/);
-  return parts[0].charAt(0).toUpperCase();
+  return trimmed.charAt(0).toUpperCase();
 }
 
-function renderMeta(){
-  const t = I18N[lang];
-  document.getElementById('appbarSub').textContent = t.subtitleWith(state.classField, state.subjectField);
-  document.getElementById('classField').value = state.classField || "";
-  document.getElementById('subjectField').value = state.subjectField || "";
-  document.getElementById('dateField').value = state.dateField || "";
-  document.getElementById('countBadge').textContent = t.countLabel(state.students.length);
+function getCurrentClass(){
+  return state.classes.find(c => c.id === state.currentClassId) || null;
+}
+
+function ensureStudentDay(cls, dateStr, studentId){
+  if(!cls.days) cls.days = {};
+  if(!cls.days[dateStr]) cls.days[dateStr] = {};
+  if(!cls.days[dateStr][studentId]) cls.days[dateStr][studentId] = blankDayFields();
+  return cls.days[dateStr][studentId];
+}
+
+function matchesSearch(s){
+  if(!searchQuery) return true;
+  return (s.name || "").toLowerCase().includes(searchQuery);
 }
 
 function ratingRowsConfig(t){
@@ -594,12 +727,135 @@ function ratingRowsConfig(t){
   ];
 }
 
+/* ---------------- Class tabs ---------------- */
+function renderClassTabs(){
+  const t = I18N[lang];
+  const wrap = document.getElementById('classTabs');
+  wrap.innerHTML = "";
+  state.classes.forEach(c => {
+    const chip = document.createElement('button');
+    chip.className = "class-chip" + (c.id === state.currentClassId ? " active" : "");
+    chip.textContent = c.name || "?";
+    chip.addEventListener('click', () => {
+      if(state.currentClassId !== c.id){
+        state.currentClassId = c.id;
+        searchQuery = "";
+        document.getElementById('searchInput').value = "";
+        document.getElementById('searchClear').style.display = 'none';
+        persist();
+        renderAll();
+      }
+    });
+    wrap.appendChild(chip);
+  });
+  const addChip = document.createElement('button');
+  addChip.className = "class-chip-add";
+  addChip.textContent = "+";
+  addChip.addEventListener('click', addClass);
+  wrap.appendChild(addChip);
+}
+
+function addClass(){
+  const t = I18N[lang];
+  const name = prompt(t.newClassPrompt, "");
+  if(name === null) return;
+  const trimmed = name.trim();
+  if(!trimmed) return;
+  const cls = { id: uid(), name: trimmed, subject: "", students: [], days: {} };
+  state.classes.push(cls);
+  state.currentClassId = cls.id;
+  persist();
+  renderAll();
+  showToast(t.toastClassAdded);
+}
+
+/* ---------------- Date nav ---------------- */
+function renderDateNav(){
+  const t = I18N[lang];
+  document.getElementById('dateInput').value = state.currentDate;
+  document.getElementById('todayBtn').textContent = t.todayBtnLabel;
+}
+
+/* ---------------- Meta / subtitle / count ---------------- */
+function renderMeta(){
+  const t = I18N[lang];
+  const cls = getCurrentClass();
+  document.getElementById('appbarSub').textContent = t.subtitleWith(cls ? cls.name : "", cls ? cls.subject : "");
+  document.getElementById('subjectField').value = cls ? (cls.subject || "") : "";
+  const visibleCount = cls ? cls.students.filter(matchesSearch).length : 0;
+  document.getElementById('countBadge').textContent = t.countLabel(visibleCount);
+}
+
+/* ---------------- Manage classes list (in sheet) ---------------- */
+function renderManageClasses(){
+  const t = I18N[lang];
+  const list = document.getElementById('manageClassesList');
+  list.innerHTML = "";
+  state.classes.forEach(c => {
+    const row = document.createElement('div');
+    row.className = "manage-class-row";
+
+    const nameSpan = document.createElement('div');
+    nameSpan.className = "mc-name";
+    nameSpan.textContent = c.name;
+    row.appendChild(nameSpan);
+
+    const renameBtn = document.createElement('button');
+    renameBtn.textContent = "✎";
+    renameBtn.addEventListener('click', () => {
+      const newName = prompt(t.renameClassPrompt, c.name);
+      if(newName === null) return;
+      const trimmed = newName.trim();
+      if(!trimmed) return;
+      c.name = trimmed;
+      persist();
+      renderAll();
+    });
+    row.appendChild(renameBtn);
+
+    const delBtn = document.createElement('button');
+    delBtn.className = "mc-delete";
+    delBtn.textContent = "✕";
+    delBtn.addEventListener('click', () => {
+      if(confirm(t.confirmDeleteClass)){
+        const idx = state.classes.findIndex(x => x.id === c.id);
+        if(idx >= 0) state.classes.splice(idx, 1);
+        if(state.currentClassId === c.id){
+          state.currentClassId = state.classes.length ? state.classes[0].id : null;
+        }
+        persist();
+        renderAll();
+      }
+    });
+    row.appendChild(delBtn);
+
+    list.appendChild(row);
+  });
+}
+
+/* ---------------- Cards ---------------- */
 function renderCards(){
   const t = I18N[lang];
   const content = document.getElementById('content');
   content.innerHTML = "";
 
-  if(state.students.length === 0){
+  const cls = getCurrentClass();
+
+  if(!cls){
+    const empty = document.createElement('div');
+    empty.className = "empty-state";
+    empty.innerHTML = "<div class=\"emoji\">🏫</div><p><strong>" + t.emptyTitleNoClass + "</strong><br>" + t.emptyHintNoClass + "</p>";
+    const btn = document.createElement('button');
+    btn.className = "cta";
+    btn.textContent = t.addFirstClassBtn;
+    btn.addEventListener('click', addClass);
+    empty.appendChild(btn);
+    content.appendChild(empty);
+    renderMeta();
+    return;
+  }
+
+  if(cls.students.length === 0){
     const empty = document.createElement('div');
     empty.className = "empty-state";
     empty.innerHTML = "<div class=\"emoji\">📋</div><p><strong>" + t.emptyTitle + "</strong><br>" + t.emptyHint + "</p>";
@@ -608,7 +864,22 @@ function renderCards(){
     return;
   }
 
-  state.students.forEach((s, i) => {
+  const visible = cls.students
+    .map((s, idx) => ({ s, idx }))
+    .filter(({ s }) => matchesSearch(s));
+
+  if(visible.length === 0){
+    const noRes = document.createElement('div');
+    noRes.className = "no-results";
+    noRes.innerHTML = "<strong>" + t.noResultsTitle + "</strong><br>" + t.noResultsHint;
+    content.appendChild(noRes);
+    renderMeta();
+    return;
+  }
+
+  visible.forEach(({ s, idx }) => {
+    const dayRec = ensureStudentDay(cls, state.currentDate, s.id);
+
     const card = document.createElement('div');
     card.className = "card";
 
@@ -625,11 +896,6 @@ function renderCards(){
     nameInput.type = "text";
     nameInput.placeholder = t.namePh;
     nameInput.value = s.name;
-    nameInput.addEventListener('input', e => {
-      s.name = e.target.value;
-      avatar.textContent = initials(s.name);
-      persist();
-    });
     head.appendChild(nameInput);
 
     const delBtn = document.createElement('button');
@@ -637,7 +903,10 @@ function renderCards(){
     delBtn.textContent = "✕";
     delBtn.addEventListener('click', () => {
       if(confirm(t.deleteConfirm)){
-        state.students.splice(i, 1);
+        cls.students.splice(idx, 1);
+        Object.keys(cls.days || {}).forEach(dateStr => {
+          delete cls.days[dateStr][s.id];
+        });
         persist();
         renderCards();
         showToast(t.toastDeleted);
@@ -663,11 +932,11 @@ function renderCards(){
       RATE_KEYS.forEach(key => {
         const chip = document.createElement('button');
         chip.type = "button";
-        chip.className = "chip" + (s[col] === key ? " " + RATE_CLASS[key] : "");
+        chip.className = "chip" + (dayRec[col] === key ? " " + RATE_CLASS[key] : "");
         chip.textContent = t.rateShort[key];
         chip.addEventListener('click', () => {
-          s[col] = (s[col] === key) ? "" : key;
-          persist();
+          dayRec[col] = (dayRec[col] === key) ? "" : key;
+          dayRec._dirty = true;
           renderCards();
         });
         opts.appendChild(chip);
@@ -682,15 +951,52 @@ function renderCards(){
     const notesInput = document.createElement('input');
     notesInput.type = "text";
     notesInput.placeholder = t.notesPh;
-    notesInput.value = s.notes;
-    notesInput.addEventListener('input', e => { s.notes = e.target.value; persist(); });
+    notesInput.value = dayRec.notes;
     notesWrap.appendChild(notesInput);
     card.appendChild(notesWrap);
+
+    const unsavedBar = document.createElement('div');
+    unsavedBar.className = "unsaved-bar" + ((s._dirty || dayRec._dirty) ? " show" : "");
+    const unsavedLabel = document.createElement('span');
+    unsavedLabel.className = "unsaved-text";
+    unsavedLabel.textContent = t.unsavedText;
+    const saveBtn = document.createElement('button');
+    saveBtn.className = "save-btn";
+    saveBtn.textContent = t.saveBtn;
+    saveBtn.addEventListener('click', () => {
+      s._dirty = false;
+      dayRec._dirty = false;
+      persist();
+      unsavedBar.classList.remove('show');
+      showToast(t.toastSaved);
+    });
+    unsavedBar.appendChild(unsavedLabel);
+    unsavedBar.appendChild(saveBtn);
+    card.appendChild(unsavedBar);
+
+    nameInput.addEventListener('input', e => {
+      s.name = e.target.value;
+      avatar.textContent = initials(s.name);
+      s._dirty = true;
+      unsavedBar.classList.add('show');
+    });
+    notesInput.addEventListener('input', e => {
+      dayRec.notes = e.target.value;
+      dayRec._dirty = true;
+      unsavedBar.classList.add('show');
+    });
 
     content.appendChild(card);
   });
 
   renderMeta();
+}
+
+function renderAll(){
+  renderClassTabs();
+  renderDateNav();
+  renderManageClasses();
+  renderCards();
 }
 
 function applyLanguage(){
@@ -701,27 +1007,30 @@ function applyLanguage(){
   document.getElementById('pageTitle').textContent = t.pageTitle;
   document.getElementById('titleText').textContent = t.title;
   document.getElementById('sheetTitle').textContent = t.sheetTitle;
-  document.getElementById('lblClass').textContent = t.lblClass;
+  document.getElementById('manageClassesTitle').textContent = t.manageClassesTitle;
   document.getElementById('lblSubject').textContent = t.lblSubject;
-  document.getElementById('lblDate').textContent = t.lblDate;
-  document.getElementById('classField').placeholder = t.classPh;
   document.getElementById('subjectField').placeholder = t.subjectPh;
+  document.getElementById('searchInput').placeholder = "";
   document.getElementById('actExportLabel').textContent = t.exportCsv;
   document.getElementById('actPrintLabel').textContent = t.print;
-  document.getElementById('actClearLabel').textContent = t.clearAll;
+  document.getElementById('actClearDayLabel').textContent = t.clearDay;
   document.getElementById('fabAdd').title = t.fabTitle;
+  document.getElementById('searchInput').placeholder = (lang === 'ar') ? "ابحث بالاسم..." : "Search by name...";
 
   document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
   document.getElementById('btnEn').classList.toggle('active', lang === 'en');
 
-  renderCards();
+  renderAll();
 }
 
 function addStudent(){
-  state.students.push(newStudent());
+  const t = I18N[lang];
+  const cls = getCurrentClass();
+  if(!cls){ addClass(); return; }
+  cls.students.push({ id: uid(), name: "", _dirty:false });
   persist();
   renderCards();
-  showToast(I18N[lang].toastAdded);
+  showToast(t.toastAdded);
   const inputs = document.querySelectorAll('.name-input');
   if(inputs.length){
     const last = inputs[inputs.length - 1];
@@ -732,13 +1041,18 @@ function addStudent(){
 
 function exportCsv(){
   const t = I18N[lang];
+  const cls = getCurrentClass();
+  if(!cls) return;
   const cols = ratingRowsConfig(t);
   const headers = [t.numHeader, t.nameHeader, ...cols.map(c=>c[1]), t.notesHeader];
-  const rows = state.students.map((s,i) => [
-    i+1, s.name,
-    ...cols.map(([col]) => s[col] ? t.rateShort[s[col]] : ""),
-    s.notes
-  ]);
+  const rows = cls.students.map((s,i) => {
+    const rec = (cls.days[state.currentDate] && cls.days[state.currentDate][s.id]) || blankDayFields();
+    return [
+      i+1, s.name,
+      ...cols.map(([col]) => rec[col] ? t.rateShort[rec[col]] : ""),
+      rec.notes || ""
+    ];
+  });
   let csv = "\uFEFF" + headers.join(",") + "\n";
   rows.forEach(r => {
     csv += r.map(v => "\"" + String(v).replace(/"/g,'""') + "\"").join(",") + "\n";
@@ -746,10 +1060,9 @@ function exportCsv(){
   const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const cls = state.classField ? state.classField.replace(/\s+/g,'_') : "class";
-  const dt = state.dateField || new Date().toISOString().slice(0,10);
+  const clsName = (cls.name || "class").replace(/\s+/g,'_');
   a.href = url;
-  a.download = "followup_" + cls + "_" + dt + ".csv";
+  a.download = "followup_" + clsName + "_" + state.currentDate + ".csv";
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -769,20 +1082,23 @@ function closeSheet(){
   document.getElementById('bottomSheet').classList.remove('open');
 }
 
-document.getElementById('classField').addEventListener('input', e => { state.classField = e.target.value; persist(); renderMeta(); });
-document.getElementById('subjectField').addEventListener('input', e => { state.subjectField = e.target.value; persist(); renderMeta(); });
-document.getElementById('dateField').addEventListener('input', e => { state.dateField = e.target.value; persist(); });
+document.getElementById('subjectField').addEventListener('input', e => {
+  const cls = getCurrentClass();
+  if(!cls) return;
+  cls.subject = e.target.value;
+  persist();
+  renderMeta();
+});
 
 document.getElementById('fabAdd').addEventListener('click', addStudent);
 document.getElementById('exportCsvBtn').addEventListener('click', () => { exportCsv(); closeSheet(); });
 document.getElementById('printBtn').addEventListener('click', () => { closeSheet(); setTimeout(()=>window.print(), 200); });
-document.getElementById('clearBtn').addEventListener('click', () => {
+document.getElementById('clearDayBtn').addEventListener('click', () => {
   const t = I18N[lang];
-  if(confirm(t.confirmClear)){
-    state.students = [];
-    state.classField = "";
-    state.subjectField = "";
-    state.dateField = "";
+  const cls = getCurrentClass();
+  if(!cls) return;
+  if(confirm(t.confirmClearDay)){
+    cls.days[state.currentDate] = {};
     persist();
     renderCards();
     closeSheet();
@@ -793,6 +1109,62 @@ document.getElementById('sheetOverlay').addEventListener('click', closeSheet);
 
 document.getElementById('btnAr').addEventListener('click', () => setLang('ar'));
 document.getElementById('btnEn').addEventListener('click', () => setLang('en'));
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  document.getElementById('searchClear').style.display = e.target.value ? 'flex' : 'none';
+  renderCards();
+});
+document.getElementById('searchClear').addEventListener('click', () => {
+  const input = document.getElementById('searchInput');
+  input.value = "";
+  searchQuery = "";
+  document.getElementById('searchClear').style.display = 'none';
+  renderCards();
+  input.focus();
+});
+
+document.getElementById('dateInput').addEventListener('change', e => {
+  if(e.target.value){
+    state.currentDate = e.target.value;
+    persist();
+    renderDateNav();
+    renderCards();
+  }
+});
+document.getElementById('datePrev').addEventListener('click', () => {
+  state.currentDate = shiftDate(state.currentDate, -1);
+  persist();
+  renderDateNav();
+  renderCards();
+});
+document.getElementById('dateNext').addEventListener('click', () => {
+  state.currentDate = shiftDate(state.currentDate, 1);
+  persist();
+  renderDateNav();
+  renderCards();
+});
+document.getElementById('todayBtn').addEventListener('click', () => {
+  state.currentDate = todayStr();
+  persist();
+  renderDateNav();
+  renderCards();
+});
+
+window.addEventListener('beforeunload', (e) => {
+  let hasUnsaved = false;
+  state.classes.forEach(c => {
+    c.students.forEach(s => { if(s._dirty) hasUnsaved = true; });
+    Object.values(c.days || {}).forEach(day => {
+      Object.values(day).forEach(rec => { if(rec._dirty) hasUnsaved = true; });
+    });
+  });
+  if(hasUnsaved){
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
 
 loadState();
 applyLanguage();

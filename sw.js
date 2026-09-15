@@ -1,4 +1,4 @@
-const CACHE_NAME = "followup-sheet-v1";
+const CACHE_NAME = "followup-sheet-v2";
 const ASSETS = [
   "./",
   "./index.html",
