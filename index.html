@@ -433,7 +433,36 @@
   @media print{
     .appbar, .fab, .toast, .sheet-overlay, .bottom-sheet, .card-menu-btn, .date-nav, .subbar{ display:none !important; }
     body{ background:#fff; }
+    body.print-full-export .app > *:not(#printArea){ display:none !important; }
+    body.print-full-export #printArea{ display:block !important; padding:16px; }
   }
+
+  #printArea{ display:none; }
+  #printArea{
+    font-family:'Tajawal','Inter',sans-serif;
+    color:#000;
+  }
+  #printArea .pdf-class-title{ font-size:20px; font-weight:900; color:#1e3a5f; margin:0 0 2px; }
+  #printArea .pdf-class-subject{ font-size:13px; color:#555; margin:0 0 14px; }
+  #printArea .pdf-date-title{ font-size:14px; font-weight:800; color:#1e3a5f; margin:18px 0 6px; border-bottom:1.5px solid #1e3a5f; padding-bottom:4px; }
+  #printArea .pdf-empty{ font-size:13px; color:#777; }
+  #printArea table.pdf-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:6px;
+    font-size:11.5px;
+  }
+  #printArea table.pdf-table th,
+  #printArea table.pdf-table td{
+    border:1px solid #ccc;
+    padding:5px 6px;
+    text-align:center;
+  }
+  #printArea table.pdf-table thead{ display:table-header-group; }
+  #printArea table.pdf-table th{ background:#eef1f6; font-weight:800; }
+  #printArea table.pdf-table td:first-child,
+  #printArea table.pdf-table th:first-child{ text-align:start; }
+  #printArea .pdf-pagebreak{ page-break-after:always; }
 </style>
 </head>
 <body>
@@ -453,7 +482,7 @@
           <button id="btnAr" class="active">AR</button>
           <button id="btnEn">EN</button>
         </div>
-        <button class="icon-btn" id="menuBtn" title="Menu" style="display:none;">⋮</button>
+        <button class="icon-btn" id="menuBtn" title="Menu">⋮</button>
       </div>
     </div>
 
@@ -486,18 +515,27 @@
     <div class="sheet-handle"></div>
     <div class="sheet-title" id="sheetTitle">إعدادات الفصل</div>
 
-    <div class="sheet-field">
-      <label id="lblSubject">المادة</label>
-      <input type="text" id="subjectField">
+    <div id="sheetHomeSection" style="display:none;">
+      <button class="sheet-action" id="exportAllPdfBtn"><span class="sa-icon">🖨</span><span id="actExportAllPdfLabel"></span></button>
     </div>
 
-    <div class="sheet-divider"></div>
+    <div id="sheetClassSection">
+      <div class="sheet-field">
+        <label id="lblSubject">المادة</label>
+        <input type="text" id="subjectField">
+      </div>
 
-    <button class="sheet-action" id="exportCsvBtn"><span class="sa-icon">⭳</span><span id="actExportLabel"></span></button>
-    <button class="sheet-action" id="printBtn"><span class="sa-icon">⎙</span><span id="actPrintLabel"></span></button>
-    <button class="sheet-action danger" id="clearDayBtn"><span class="sa-icon">✕</span><span id="actClearDayLabel"></span></button>
-    <button class="sheet-action danger" id="deleteClassBtn"><span class="sa-icon">🗑</span><span id="actDeleteClassLabel"></span></button>
+      <div class="sheet-divider"></div>
+
+      <button class="sheet-action" id="exportClassPdfBtn"><span class="sa-icon">🖨</span><span id="actExportClassPdfLabel"></span></button>
+      <button class="sheet-action" id="printBtn"><span class="sa-icon">⎙</span><span id="actPrintLabel"></span></button>
+      <button class="sheet-action" id="exportCsvBtn"><span class="sa-icon">⭳</span><span id="actExportLabel"></span></button>
+      <button class="sheet-action danger" id="clearDayBtn"><span class="sa-icon">✕</span><span id="actClearDayLabel"></span></button>
+      <button class="sheet-action danger" id="deleteClassBtn"><span class="sa-icon">🗑</span><span id="actDeleteClassLabel"></span></button>
+    </div>
   </div>
+
+  <div id="printArea"></div>
 
 </div>
 
@@ -528,7 +566,12 @@ const I18N = {
     colSupport: "الدعم",
     notesPh: "أضف ملاحظة...",
     exportCsv: "تصدير CSV لليوم ده",
-    print: "طباعة / PDF",
+    print: "طباعة الشاشة الحالية",
+    exportClassPdf: "تصدير الفصل PDF (كل الأيام)",
+    exportAllClassesPdf: "تصدير كل الفصول PDF",
+    homeSheetTitle: "خيارات عامة",
+    noDataForPdf: "لا توجد بيانات مسجلة لهذا الفصل بعد.",
+    noClassesForPdf: "لا يوجد فصول لتصديرها.",
     clearDay: "مسح بيانات اليوم ده",
     deleteClassAction: "حذف هذا الفصل بالكامل",
     fabTitle: "إضافة طالب",
@@ -581,7 +624,12 @@ const I18N = {
     colSupport: "Support",
     notesPh: "Add a note...",
     exportCsv: "Export today's CSV",
-    print: "Print / PDF",
+    print: "Print current view",
+    exportClassPdf: "Export class as PDF (all days)",
+    exportAllClassesPdf: "Export all classes as PDF",
+    homeSheetTitle: "General options",
+    noDataForPdf: "No data recorded for this class yet.",
+    noClassesForPdf: "No classes to export.",
     clearDay: "Clear this day's data",
     deleteClassAction: "Delete this class entirely",
     fabTitle: "Add student",
@@ -908,7 +956,6 @@ function updateChrome(){
   const isHome = screen === "home" || !getCurrentClass();
   document.getElementById('backBtn').style.display = isHome ? 'none' : 'flex';
   document.getElementById('appLogo').style.display = isHome ? 'block' : 'none';
-  document.getElementById('menuBtn').style.display = isHome ? 'none' : 'flex';
   document.getElementById('dateNavWrap').style.display = isHome ? 'none' : 'flex';
   document.getElementById('searchRow').style.display = isHome ? 'none' : 'flex';
   document.getElementById('countRow').style.display = isHome ? 'none' : 'flex';
@@ -1132,6 +1179,8 @@ function applyLanguage(){
   document.getElementById('actPrintLabel').textContent = t.print;
   document.getElementById('actClearDayLabel').textContent = t.clearDay;
   document.getElementById('actDeleteClassLabel').textContent = t.deleteClassAction;
+  document.getElementById('actExportClassPdfLabel').textContent = t.exportClassPdf;
+  document.getElementById('actExportAllPdfLabel').textContent = t.exportAllClassesPdf;
   document.getElementById('searchInput').placeholder = (lang === 'ar') ? "ابحث بالاسم..." : "Search by name...";
 
   document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
@@ -1190,7 +1239,78 @@ function setLang(newLang){
   applyLanguage();
 }
 
+function escapeHtml(str){
+  return String(str == null ? "" : str).replace(/[&<>"']/g, m => (
+    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]
+  ));
+}
+
+function buildDayTableHtml(cls, dateStr, cols, t){
+  const day = (cls.days && cls.days[dateStr]) || {};
+  const headers = "<th>" + escapeHtml(t.nameHeader) + "</th>" +
+    cols.map(([, label]) => "<th>" + escapeHtml(label) + "</th>").join("") +
+    "<th>" + escapeHtml(t.notesHeader) + "</th>";
+  const rows = cls.students.map(s => {
+    const rec = day[s.id] || {};
+    const cells = cols.map(([key]) => "<td>" + (rec[key] ? escapeHtml(t.rateShort[rec[key]]) : "-") + "</td>").join("");
+    return "<tr><td>" + escapeHtml(s.name || "-") + "</td>" + cells + "<td>" + escapeHtml(rec.notes || "") + "</td></tr>";
+  }).join("");
+  return "<table class=\"pdf-table\"><thead><tr>" + headers + "</tr></thead><tbody>" + rows + "</tbody></table>";
+}
+
+function buildClassPdfHtml(cls){
+  const t = I18N[lang];
+  const cols = ratingRowsConfig(t);
+  const dates = Object.keys(cls.days || {}).filter(d => Object.keys(cls.days[d]).length > 0).sort();
+
+  let html = "<div class=\"pdf-class-title\">" + escapeHtml(cls.name) + "</div>";
+  html += "<div class=\"pdf-class-subject\">" + escapeHtml(cls.subject || t.subtitleWith("")) + "</div>";
+
+  if(dates.length === 0){
+    html += "<div class=\"pdf-empty\">" + escapeHtml(t.noDataForPdf) + "</div>";
+  } else {
+    dates.forEach(dateStr => {
+      html += "<div class=\"pdf-date-title\">" + escapeHtml(dateStr) + "</div>";
+      html += buildDayTableHtml(cls, dateStr, cols, t);
+    });
+  }
+  return html;
+}
+
+function printFullExport(html){
+  const area = document.getElementById('printArea');
+  area.innerHTML = html;
+  document.body.classList.add('print-full-export');
+  const cleanup = () => {
+    document.body.classList.remove('print-full-export');
+    area.innerHTML = "";
+    window.removeEventListener('afterprint', cleanup);
+  };
+  window.addEventListener('afterprint', cleanup);
+  setTimeout(() => window.print(), 50);
+  setTimeout(cleanup, 4000);
+}
+
+function exportClassPdf(cls){
+  if(!cls) return;
+  printFullExport(buildClassPdfHtml(cls));
+}
+
+function exportAllClassesPdf(){
+  const t = I18N[lang];
+  if(state.classes.length === 0){
+    alert(t.noClassesForPdf);
+    return;
+  }
+  const html = state.classes.map(c => buildClassPdfHtml(c)).join("<div class=\"pdf-pagebreak\"></div>");
+  printFullExport(html);
+}
+
 function openSheet(){
+  const isHome = screen === "home" || !getCurrentClass();
+  document.getElementById('sheetHomeSection').style.display = isHome ? 'block' : 'none';
+  document.getElementById('sheetClassSection').style.display = isHome ? 'none' : 'block';
+  document.getElementById('sheetTitle').textContent = isHome ? I18N[lang].homeSheetTitle : I18N[lang].sheetTitle;
   document.getElementById('sheetOverlay').classList.add('open');
   document.getElementById('bottomSheet').classList.add('open');
 }
@@ -1214,6 +1334,15 @@ document.getElementById('fabAdd').addEventListener('click', () => {
 });
 document.getElementById('backBtn').addEventListener('click', () => history.back());
 document.getElementById('exportCsvBtn').addEventListener('click', () => { exportCsv(); closeSheet(); });
+document.getElementById('exportClassPdfBtn').addEventListener('click', () => {
+  const cls = getCurrentClass();
+  closeSheet();
+  exportClassPdf(cls);
+});
+document.getElementById('exportAllPdfBtn').addEventListener('click', () => {
+  closeSheet();
+  exportAllClassesPdf();
+});
 document.getElementById('printBtn').addEventListener('click', () => { closeSheet(); setTimeout(()=>window.print(), 200); });
 document.getElementById('clearDayBtn').addEventListener('click', () => {
   const t = I18N[lang];
